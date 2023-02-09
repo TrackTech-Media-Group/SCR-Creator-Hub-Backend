@@ -3,7 +3,7 @@ import { config } from "dotenv";
 import { writeFile } from "node:fs/promises";
 import { join } from "node:path";
 import type Server from "../Server.js";
-import { DEFAULT_RAW_ENV } from "./ConfigTypes.js";
+import { DEFAULT_RAW_ENV, EnvConfig } from "./ConfigTypes.js";
 
 export class ConfigReader {
 	public dataDirectory = join(process.cwd(), "data");
@@ -25,6 +25,29 @@ export class ConfigReader {
 					break;
 				default:
 					this.server.logger.fatal(`[CONFIG]: unexpected error occured while loading the ${bold(".env")} config.`, error);
+			}
+		}
+
+		const parsedConfig = this.parseConfig();
+		return parsedConfig;
+	}
+
+	private parseConfig() {
+		const parsedItems: EnvConfig = {
+			port: this.parseConfigItem("PORT")
+		};
+
+		return parsedItems;
+	}
+
+	private parseConfigItem<K extends keyof EnvConfig>(key: keyof typeof DEFAULT_RAW_ENV): EnvConfig[K] {
+		const value = process.env[key] ?? "";
+		switch (key) {
+			case "PORT": {
+				const _val = Number(value);
+				if (isNaN(_val)) return 3000;
+
+				return _val;
 			}
 		}
 	}
