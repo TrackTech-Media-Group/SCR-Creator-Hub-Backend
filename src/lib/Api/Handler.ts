@@ -40,7 +40,7 @@ export class ApiHandler {
 			const { methods, middleware } = apiRoute.getRouteData();
 			methods.forEach((_method) => {
 				const method = _method.toLowerCase() as Lowercase<ApiMethods>;
-				this.server.server[method](`/api${route}`, ...middleware, apiRoute.run.bind(apiRoute));
+				this.server.server[method](route, ...middleware, apiRoute.run.bind(apiRoute));
 			});
 		} catch (err) {
 			this.server.logger.fatal(`[ApiHandler]: Error while loading route: ${bold(route)} `, err);
