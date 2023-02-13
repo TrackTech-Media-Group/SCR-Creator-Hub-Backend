@@ -23,7 +23,9 @@ export class ApiHandler {
 			await this.loadRoute(route);
 		}
 
-		this.server.logger.info("[ApiHandler]: Api routes loaded.");
+		this.server.logger.info(
+			`[ApiHandler]: Api routes loaded (${this.server.server._router.stack.filter((x: any) => x.route && x.route.path).length} routes)`
+		);
 	}
 
 	/**
