@@ -12,7 +12,12 @@ export class Jwt {
 	 * @returns State value as JWT Token for oauth2 applications
 	 */
 	public generateState() {
-		return jwt.sign({ randomToken: Jwt.randomToken() }, this.encryptionKey, { expiresIn: 9e5 });
+		const randomToken = Jwt.randomToken();
+
+		return {
+			token: jwt.sign({ randomToken }, this.encryptionKey, { expiresIn: 9e5 }),
+			state: randomToken
+		};
 	}
 
 	/**
