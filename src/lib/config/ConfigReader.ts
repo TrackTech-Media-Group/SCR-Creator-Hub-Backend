@@ -35,7 +35,8 @@ export class ConfigReader {
 	private parseConfig() {
 		const parsedItems: EnvConfig = {
 			port: this.parseConfigItem("PORT"),
-			internalApiKey: this.parseConfigItem("INTERNAL_API_KEY")
+			internalApiKey: this.parseConfigItem("INTERNAL_API_KEY"),
+			encryptionKey: this.parseConfigItem("ENCRYPTION_KEY")
 		};
 
 		return parsedItems;
@@ -51,7 +52,8 @@ export class ConfigReader {
 				return _val;
 			}
 			case "INTERNAL_API_KEY":
-				if (typeof value !== "string" || !value.length) throw new Error("Invalid INTERNAL_API_KEY provided in .env file");
+			case "ENCRYPTION_KEY":
+				if (typeof value !== "string" || !value.length) throw new Error(`Invalid ${key} provided in .env file`);
 				return value;
 		}
 	}
