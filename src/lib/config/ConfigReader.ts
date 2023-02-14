@@ -34,13 +34,14 @@ export class ConfigReader {
 
 	private parseConfig() {
 		const parsedItems: EnvConfig = {
-			port: this.parseConfigItem("PORT")
+			port: this.parseConfigItem("PORT"),
+			internalApiKey: this.parseConfigItem("INTERNAL_API_KEY")
 		};
 
 		return parsedItems;
 	}
 
-	private parseConfigItem<K extends keyof EnvConfig>(key: keyof typeof DEFAULT_RAW_ENV): EnvConfig[K] {
+	private parseConfigItem(key: keyof typeof DEFAULT_RAW_ENV): any {
 		const value = process.env[key] ?? "";
 		switch (key) {
 			case "PORT": {
@@ -49,10 +50,22 @@ export class ConfigReader {
 
 				return _val;
 			}
+			case "INTERNAL_API_KEY":
+				if (typeof value !== "string" || !value.length) throw new Error("Invalid INTERNAL_API_KEY provided in .env file");
+				return value;
 		}
 	}
 
 	private generateDefaultConfig() {
-		return Object.keys(DEFAULT_RAW_ENV).map((key) => `${key}="${DEFAULT_RAW_ENV[key as keyof typeof DEFAULT_RAW_ENV]}"`);
+		return Object.keys(DEFAULT_RAW_ENV)
+			.map((key) => {
+				const _res = DEFAULT_RAW_ENV[key as keyof typeof DEFAULT_RAW_ENV];
+
+				let res: string = _res as any;
+				if (typeof _res === "function") res = _res();
+
+				return `${key}="${res}"`;
+			})
+			.join("\n");
 	}
 }
