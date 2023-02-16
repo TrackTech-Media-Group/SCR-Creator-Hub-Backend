@@ -1,3 +1,4 @@
+import { SnowflakeRegex } from "@sapphire/discord-utilities";
 import { bold } from "colorette";
 import { config } from "dotenv";
 import { writeFile } from "node:fs/promises";
@@ -36,7 +37,11 @@ export class ConfigReader {
 		const parsedItems: EnvConfig = {
 			port: this.parseConfigItem("PORT"),
 			internalApiKey: this.parseConfigItem("INTERNAL_API_KEY"),
-			encryptionKey: this.parseConfigItem("ENCRYPTION_KEY")
+			encryptionKey: this.parseConfigItem("ENCRYPTION_KEY"),
+			discord: {
+				id: this.parseConfigItem("DISCORD_CLIENT_ID"),
+				secret: this.parseConfigItem("DISCORD_CLIENT_SECRET")
+			}
 		};
 
 		return parsedItems;
@@ -53,8 +58,15 @@ export class ConfigReader {
 			}
 			case "INTERNAL_API_KEY":
 			case "ENCRYPTION_KEY":
+			case "DISCORD_CLIENT_SECRET":
 				if (typeof value !== "string" || !value.length) throw new Error(`Invalid ${key} provided in .env file`);
 				return value;
+			case "DISCORD_CLIENT_ID": {
+				const match = value.match(SnowflakeRegex);
+				if (!match || !match.groups?.id) throw new Error("Invalid Discord Client Id provided!");
+
+				return match.groups.id;
+			}
 		}
 	}
 
