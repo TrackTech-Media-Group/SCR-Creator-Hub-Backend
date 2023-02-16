@@ -15,9 +15,26 @@ export class Jwt {
 		const randomToken = Jwt.randomToken();
 
 		return {
-			token: jwt.sign({ randomToken }, this.encryptionKey, { expiresIn: 9e5 }),
+			token: jwt.sign({ randomToken, type: "state" }, this.encryptionKey, { expiresIn: 9e5 }),
 			state: randomToken
 		};
+	}
+
+	/**
+	 * Checks the JWT State Token
+	 * @param cookie The XSRF-STATE-COOKIE cookie from the request
+	 * @param query The STATE query token from the request
+	 * @returns Boolean
+	 */
+	public checkState(cookie: string, query: string) {
+		try {
+			jwt.verify(cookie, this.encryptionKey, { ignoreExpiration: false });
+			jwt.verify(query, this.encryptionKey, { ignoreExpiration: false });
+
+			return cookie === query;
+		} catch (err) {
+			return false;
+		}
 	}
 
 	/**
