@@ -40,7 +40,8 @@ export class ConfigReader {
 			encryptionKey: this.parseConfigItem("ENCRYPTION_KEY"),
 			discord: {
 				id: this.parseConfigItem("DISCORD_CLIENT_ID"),
-				secret: this.parseConfigItem("DISCORD_CLIENT_SECRET")
+				secret: this.parseConfigItem("DISCORD_CLIENT_SECRET"),
+				callback: this.parseConfigItem("DISCORD_CALLBACK_URL")
 			}
 		};
 
@@ -67,6 +68,14 @@ export class ConfigReader {
 
 				return match.groups.id;
 			}
+			case "DISCORD_CALLBACK_URL": {
+				const urlRegex = /^(https?|ftp):\/\/(-\.)?([^\s/?.#-]+\.?)+(\/[^\s]*)?$/;
+				if (urlRegex.test(value)) return value;
+
+				return "http://localhost:3001/auth/callback";
+			}
+			default:
+				return "";
 		}
 	}
 

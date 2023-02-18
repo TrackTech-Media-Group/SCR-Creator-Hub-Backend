@@ -6,6 +6,7 @@ export const DEFAULT_RAW_ENV = {
 	ENCRYPTION_KEY: () => randomBytes(32).toString("hex"),
 	DISCORD_CLIENT_ID: "",
 	DISCORD_CLIENT_SECRET: "",
+	DISCORD_CALLBACK_URL: "http://localhost:3001/auth/callback",
 	DATABASE_URL: "postgresql://myuser:mypassword@localhost:5432/db?schema=public"
 } as const;
 
@@ -16,5 +17,6 @@ export interface EnvConfig {
 	discord: {
 		id: string;
 		secret: string;
+		callback: string;
 	};
 }
