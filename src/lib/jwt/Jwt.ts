@@ -8,6 +8,15 @@ export class Jwt {
 	public constructor(public server: Server) {}
 
 	/**
+	 * Creates a JWT signed token
+	 * @param value The value to add the JWT token
+	 * @param expiresIn The expiration time in ms
+	 */
+	public sign(value: Record<string, any>, expiresIn: number) {
+		return jwt.sign(value, this.encryptionKey, { expiresIn });
+	}
+
+	/**
 	 * Encryptes the provided string
 	 * @param value The string to encrypt
 	 */
