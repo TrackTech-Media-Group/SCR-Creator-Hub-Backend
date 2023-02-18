@@ -6,6 +6,8 @@ import { ApiHandler } from "./Api/index.js";
 import Config from "./config/index.js";
 import { Jwt } from "./jwt/Jwt.js";
 import { UserCache } from "./User/UserCache.js";
+import cors from "cors";
+import cookieParser from "cookie-parser";
 
 export default class Server {
 	public server: Express;
@@ -31,6 +33,8 @@ export default class Server {
 	}
 
 	public async start() {
+		this.server.use(cors({ credentials: true, origin: ["http://localhost:3000"] }), cookieParser());
+
 		await this.config.start();
 		await this.api.start();
 		await this.prisma.$connect();
