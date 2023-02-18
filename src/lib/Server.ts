@@ -36,6 +36,7 @@ export default class Server {
 		await this.prisma.$connect();
 
 		this.jwt.load();
+		this.userCache.start();
 
 		this.server.listen(this.config.config.port, this.startup.bind(this));
 	}
