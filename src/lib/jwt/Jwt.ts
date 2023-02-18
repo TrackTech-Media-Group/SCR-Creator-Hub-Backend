@@ -64,10 +64,10 @@ export class Jwt {
 	 */
 	public checkState(cookie: string, query: string) {
 		try {
-			jwt.verify(cookie, this.encryptionKey, { ignoreExpiration: false });
-			jwt.verify(query, this.encryptionKey, { ignoreExpiration: false });
+			const decoded = jwt.verify(cookie, this.encryptionKey, { ignoreExpiration: false });
+			if (typeof decoded !== "object") return false;
 
-			return cookie === query;
+			return decoded.randomToken === query;
 		} catch (err) {
 			return false;
 		}

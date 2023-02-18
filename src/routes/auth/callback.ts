@@ -4,7 +4,7 @@ import { ApiRoute, ApplyOptions } from "../../lib/Api/index.js";
 import { Oauth2, DiscordApiError } from "../../lib/discord/index.js";
 
 @ApplyOptions({
-	methods: "GET"
+	methods: "POST"
 })
 export default class extends ApiRoute {
 	public oauth2 = new Oauth2({
