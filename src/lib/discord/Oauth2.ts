@@ -40,6 +40,31 @@ export class Oauth2 implements Oauth2Options {
 	}
 
 	/**
+	 * Retrieves the Discord user data
+	 * @param accessToken The accesstoken of the requested user
+	 * @throws DiscordApiError | *Error
+	 */
+	public async getUser(accessToken: string): Promise<DiscordAPIUser> {
+		try {
+			const res = await axios.get<DiscordAPIUser>(this.getUrl("/users/@me"), {
+				headers: { Authorization: `Bearer ${accessToken}` }
+			});
+
+			return res.data;
+		} catch (err) {
+			if ("isAxiosError" in err) {
+				const error: AxiosError<DiscordApiError> = err;
+				if (error.response?.data) {
+					const discordError = error.response.data;
+					throw discordError as any;
+				}
+			}
+
+			throw err;
+		}
+	}
+
+	/**
 	 * Returns the api url with a given path
 	 * @param path The api path you want to call
 	 */
@@ -134,3 +159,15 @@ export type DiscordApiError = DiscordAPIErrorArray | DiscordAPIErrorObject | Dis
 export type Oauth2GrantType = "authorization_code" | "refresh_token";
 
 export type Oauth2TokenBodyData = Oauth2AccessTokenBodyData | Oauth2RefreshTokenBodyData;
+
+export interface DiscordAPIUser {
+	id: string;
+	username: string;
+	discriminator: string;
+	avatar: string;
+	flags: number;
+	banner: string;
+	accent_color: number;
+	premium_type: number;
+	public_flags: number;
+}
