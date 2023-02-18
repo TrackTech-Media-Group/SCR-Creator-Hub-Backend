@@ -23,7 +23,7 @@ export class Jwt {
 	public encrypt(value: string): string {
 		const iv = randomBytes(16);
 
-		const cipher = createCipheriv("aes-256-ctr", this.encryptionKey, iv);
+		const cipher = createCipheriv("aes-256-ctr", Buffer.from(this.encryptionKey), iv);
 		const encrypted = Buffer.concat([cipher.update(value), cipher.final()]);
 
 		return `${iv.toString("hex")}:${encrypted.toString("hex")}`;
