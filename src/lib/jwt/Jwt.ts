@@ -1,11 +1,38 @@
 import type Server from "../Server.js";
 import jwt from "jsonwebtoken";
-import { randomBytes } from "node:crypto";
+import { createCipheriv, createDecipheriv, randomBytes } from "node:crypto";
 
 export class Jwt {
 	public encryptionKey!: string;
 
 	public constructor(public server: Server) {}
+
+	/**
+	 * Encryptes the provided string
+	 * @param value The string to encrypt
+	 */
+	public encrypt(value: string): string {
+		const iv = randomBytes(16);
+
+		const cipher = createCipheriv("aes-256-ctr", this.encryptionKey, iv);
+		const encrypted = Buffer.concat([cipher.update(value), cipher.final()]);
+
+		return `${iv.toString("hex")}:${encrypted.toString("hex")}`;
+	}
+
+	/**
+	 * Decryptes the provided string
+	 * @param hash The string to decrypt
+	 */
+	public decrypt(hash: string): string {
+		const [iv, encrypted] = hash.split(":");
+
+		const decipher = createDecipheriv("aes-256-ctr", this.encryptionKey, Buffer.from(iv, "hex"));
+		const decrypted = Buffer.concat([decipher.update(Buffer.from(encrypted, "hex")), decipher.final()]);
+		const token = decrypted.toString();
+
+		return token;
+	}
 
 	/**
 	 * Generates a JWT Token valid for 15m
