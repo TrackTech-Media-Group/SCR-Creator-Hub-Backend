@@ -5,7 +5,7 @@ import express, { Express } from "express";
 import { ApiHandler } from "./Api/index.js";
 import Config from "./config/index.js";
 import { Jwt } from "./jwt/Jwt.js";
-import { UserCache } from "./User/UserCache.js";
+import { UserManager } from "./User/UserManager.js";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 
@@ -18,7 +18,7 @@ export default class Server {
 	public api: ApiHandler;
 
 	public jwt: Jwt;
-	public userCache: UserCache;
+	public userManager: UserManager;
 
 	public constructor() {
 		this.server = express();
@@ -29,7 +29,7 @@ export default class Server {
 		this.api = new ApiHandler(this);
 
 		this.jwt = new Jwt(this);
-		this.userCache = new UserCache(this);
+		this.userManager = new UserManager(this);
 	}
 
 	public async start() {
@@ -40,7 +40,7 @@ export default class Server {
 		await this.prisma.$connect();
 
 		this.jwt.load();
-		this.userCache.start();
+		this.userManager.start();
 
 		this.server.listen(this.config.config.port, this.startup.bind(this));
 	}

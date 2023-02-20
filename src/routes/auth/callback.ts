@@ -20,7 +20,7 @@ export default class extends ApiRoute {
 
 		try {
 			const token = await this.oauth2.requestToken(query.code);
-			const sessionJwt = await this.server.userCache.handleToken(token);
+			const sessionJwt = await this.server.userManager.cache.handleToken(token);
 
 			res.cookie("CH-SESSION", sessionJwt, { expires: new Date(Date.now() + 8.035e9) }).sendStatus(204);
 		} catch (err) {
