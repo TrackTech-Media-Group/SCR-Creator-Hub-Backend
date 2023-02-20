@@ -1,5 +1,6 @@
 import axios, { AxiosError } from "axios";
 
+// TODO: Create and use RequestHandler
 export class Oauth2 implements Oauth2Options {
 	public API_ENDPOINT = "https://discord.com/api/v10";
 
@@ -26,6 +27,32 @@ export class Oauth2 implements Oauth2Options {
 			});
 
 			return res.data;
+		} catch (err) {
+			if ("isAxiosError" in err) {
+				const error: AxiosError<DiscordApiError> = err;
+				if (error.response?.data) {
+					const discordError = error.response.data;
+					throw discordError as any;
+				}
+			}
+
+			throw err;
+		}
+	}
+
+	/**
+	 * Revokes the provided access token
+	 * @param code The access token to revoke
+	 * @throws DiscordApiError | *Error
+	 */
+	public async revokeToken(token: string): Promise<void> {
+		const credentials = Buffer.from(`${this.clientId}:${this.clientSecret}`).toString("base64");
+
+		try {
+			const requestBody = `token=${token}`;
+			await axios.post(this.getUrl("/oauth2/token"), requestBody, {
+				headers: { "Content-Type": "application/x-www-form-urlencoded", Authorization: `Basic ${credentials}` }
+			});
 		} catch (err) {
 			if ("isAxiosError" in err) {
 				const error: AxiosError<DiscordApiError> = err;
