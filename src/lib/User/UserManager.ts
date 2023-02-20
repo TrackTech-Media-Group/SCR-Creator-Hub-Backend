@@ -24,5 +24,7 @@ export class UserManager {
 			clientSecret: secret,
 			redirectUrl: callback
 		});
+
+		this.sessions.start();
 	}
 }
