@@ -14,7 +14,6 @@ export default class extends Middleware {
 		}
 
 		const [type, token] = authorization.split(/ +/g);
-		console.log(type, token);
 		if (type !== "Bearer" || token !== this.server.config.config.internalApiKey) {
 			res.status(401).send({ message: "Unauthorized." });
 			return;
