@@ -30,7 +30,7 @@ export default class extends Middleware {
 			return;
 		}
 
-		req.locals.user = sessionData.User;
+		req.locals = { user: sessionData.User };
 
 		next();
 	}
