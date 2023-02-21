@@ -8,6 +8,7 @@ import { Jwt } from "./jwt/Jwt.js";
 import { UserManager } from "./User/UserManager.js";
 import cors from "cors";
 import cookieParser from "cookie-parser";
+import { MiddlewareHandler } from "./Middleware/Handler.js";
 
 export default class Server {
 	public server: Express;
@@ -16,6 +17,7 @@ export default class Server {
 
 	public config: Config;
 	public api: ApiHandler;
+	public middleware: MiddlewareHandler;
 
 	public jwt: Jwt;
 	public userManager: UserManager;
@@ -27,6 +29,7 @@ export default class Server {
 
 		this.config = new Config(this);
 		this.api = new ApiHandler(this);
+		this.middleware = new MiddlewareHandler(this);
 
 		this.jwt = new Jwt(this);
 		this.userManager = new UserManager(this);
@@ -36,6 +39,7 @@ export default class Server {
 		this.server.use(cors({ credentials: true, origin: ["http://localhost:3000"] }), cookieParser());
 
 		await this.config.start();
+		await this.middleware.start();
 		await this.api.start();
 		await this.prisma.$connect();
 

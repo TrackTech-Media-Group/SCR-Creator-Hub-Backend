@@ -48,10 +48,14 @@ export class MiddlewareHandler {
 	 * @returns `string[]` — Array with Middleware
 	 */
 	private getMiddleware(path: string) {
-		const rawMiddleware = this.getRawMiddleware(path);
-		const filteredMiddleware = rawMiddleware.filter((middleware) => middleware.endsWith(".js")).map((route) => route.replace(".js", ""));
+		try {
+			const rawMiddleware = this.getRawMiddleware(path);
+			const filteredMiddleware = rawMiddleware.filter((middleware) => middleware.endsWith(".js")).map((route) => route.replace(".js", ""));
 
-		return filteredMiddleware;
+			return filteredMiddleware;
+		} catch (err) {
+			return [];
+		}
 	}
 
 	/**
