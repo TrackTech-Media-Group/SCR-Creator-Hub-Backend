@@ -4,7 +4,7 @@ import type { ApiMethods } from "./types.js";
 
 export class ApiRoute implements ApiRouteOptions {
 	public methods: ApiMethods | ApiMethods[] = [];
-	public middleware: ApiRoute[] = [];
+	public middleware: string[] = [];
 
 	public constructor(public server: Server, options: ApiRouteOptions) {
 		if (typeof options.methods !== "string" && !Array.isArray(options.methods)) throw new Error("ApiRoute: incorrect methods provided!");
@@ -33,12 +33,15 @@ export class ApiRoute implements ApiRouteOptions {
 	public getRouteData() {
 		return {
 			methods: typeof this.methods === "string" ? [this.methods] : this.methods,
-			middleware: this.middleware.map((middleware) => middleware.run.bind(middleware))
+			middleware: this.middleware
+				.map((middleware) => this.server.middleware.middleware.get(middleware))
+				.filter((middleware) => typeof middleware !== "undefined")
+				.map((middleware) => middleware!.run.bind(middleware!))
 		};
 	}
 }
 
 export interface ApiRouteOptions {
 	methods: ApiMethods | ApiMethods[];
-	middleware?: ApiRoute[];
+	middleware?: string[];
 }
