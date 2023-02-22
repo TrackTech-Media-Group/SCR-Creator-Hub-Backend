@@ -50,7 +50,7 @@ export class Oauth2 implements Oauth2Options {
 
 		try {
 			const requestBody = `token=${token}`;
-			await axios.post(this.getUrl("/oauth2/token"), requestBody, {
+			await axios.post(this.getUrl("/oauth2/token/revoke"), requestBody, {
 				headers: { "Content-Type": "application/x-www-form-urlencoded", Authorization: `Basic ${credentials}` }
 			});
 		} catch (err) {
