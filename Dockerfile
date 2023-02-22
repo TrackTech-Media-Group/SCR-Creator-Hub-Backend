@@ -16,8 +16,8 @@ FROM node:19-alpine as builder
 WORKDIR /creatorhub
 
 # Create user PaperPlane
-RUN addgroup --system --gid 1639 creatorhub
-RUN adduser --system --uid 1639 creatorhub
+RUN addgroup --system --gid 3951 creatorhub
+RUN adduser --system --uid 3951 creatorhub
 
 # Copy build files
 COPY --from=builder --chown=creatorhub:creatorhub /creatorhub/dist ./dist
