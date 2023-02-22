@@ -22,9 +22,7 @@ export class MiddlewareHandler {
 			await this.loadRoute(route);
 		}
 
-		this.server.logger.info(
-			`[ApiHandler]: Api middleware loaded (${this.server.server._router.stack.filter((x: any) => x.route && x.route.path).length} routes)`
-		);
+		this.server.logger.info(`[ApiHandler]: Api middleware loaded (${middleware.length} classess)`);
 	}
 
 	/**
