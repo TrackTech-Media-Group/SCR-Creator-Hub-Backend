@@ -44,6 +44,18 @@ export class Jwt {
 	}
 
 	/**
+	 * Generates a JWT Token CSRF-TOKEN
+	 */
+	public generateCsrfToken() {
+		const randomToken = Jwt.randomToken();
+
+		return {
+			token: jwt.sign({ randomToken, type: "state" }, this.encryptionKey),
+			state: randomToken
+		};
+	}
+
+	/**
 	 * Generates a JWT Token valid for 15m
 	 * @returns State value as JWT Token for oauth2 applications
 	 */
