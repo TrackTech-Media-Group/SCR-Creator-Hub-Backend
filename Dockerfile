@@ -12,7 +12,7 @@ RUN yarn install --immutable
 RUN yarn run prisma generate
 RUN yarn build
 
-FROM node:19-alpine as builder
+FROM node:19-alpine as runner
 WORKDIR /creatorhub
 
 # Create user PaperPlane
