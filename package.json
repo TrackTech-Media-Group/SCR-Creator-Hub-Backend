@@ -11,7 +11,7 @@
 		"build": "tsc --build",
 		"build:watch": "tsc --watch",
 		"start:dev": "nodemon ./dist",
-		"start": "node ./dist",
+		"start": "yarn prisma migrate deploy && node ./dist",
 		"lint": "eslint src",
 		"postinstall": "is-ci || husky install",
 		"prisma": "yarn dotenv -e ./data/.env -- prisma"
