@@ -1,4 +1,4 @@
-name: "CD(Docker): Publish d image"
+name: "CD(Docker): Publish dev image"
 
 on:
   workflow_dispatch:
