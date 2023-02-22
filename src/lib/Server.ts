@@ -36,7 +36,7 @@ export default class Server {
 	}
 
 	public async start() {
-		this.server.use(cors({ credentials: true, origin: ["http://localhost:3000"] }), cookieParser());
+		this.server.use(cors({ credentials: true, origin: ["http://localhost:3000", "https://beta.scrcreate.app"] }), cookieParser());
 
 		await this.config.start();
 		await this.middleware.start();
