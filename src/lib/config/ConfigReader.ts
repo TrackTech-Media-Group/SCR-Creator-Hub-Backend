@@ -1,4 +1,4 @@
-import { SnowflakeRegex } from "@sapphire/discord-utilities";
+import { HttpUrlRegex, SnowflakeRegex } from "@sapphire/discord-utilities";
 import { bold } from "colorette";
 import { config } from "dotenv";
 import { writeFile } from "node:fs/promises";
@@ -12,7 +12,7 @@ export class ConfigReader {
 	public constructor(public server: Server) {}
 
 	public async start() {
-		const { error } = config({ path: join(this.dataDirectory, ".env") });
+		const { error, parsed } = config({ path: join(this.dataDirectory, ".env") });
 		if (error) {
 			switch ((error as NodeJS.ErrnoException).code) {
 				case "ENOENT":
@@ -29,6 +29,7 @@ export class ConfigReader {
 			}
 		}
 
+		console.log(parsed);
 		const parsedConfig = this.parseConfig();
 		return parsedConfig;
 	}
@@ -69,7 +70,7 @@ export class ConfigReader {
 				return match.groups.id;
 			}
 			case "DISCORD_CALLBACK_URL": {
-				const urlRegex = /^(https?|ftp):\/\/(-\.)?([^\s/?.#-]+\.?)+(\/[^\s]*)?$/;
+				const urlRegex = HttpUrlRegex;
 				if (urlRegex.test(value)) return value;
 
 				return "http://localhost:3001/auth/callback";
