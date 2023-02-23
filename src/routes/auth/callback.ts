@@ -22,7 +22,10 @@ export default class extends ApiRoute {
 			const token = await this.oauth2.requestToken(query.code);
 			const sessionJwt = await this.server.userManager.cache.handleToken(token);
 
-			res.cookie("CH-SESSION", sessionJwt, { expires: new Date(Date.now() + 8.035e9) }).sendStatus(204);
+			res.cookie("CH-SESSION", sessionJwt, {
+				expires: new Date(Date.now() + 8.035e9),
+				domain: `.${req.hostname.split(".").reverse().slice(0, 2).reverse().join(".")}`
+			}).sendStatus(204);
 		} catch (err) {
 			if ("errors" in err) {
 				const error = err as DiscordApiError;
