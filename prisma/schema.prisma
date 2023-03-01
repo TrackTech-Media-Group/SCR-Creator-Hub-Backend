@@ -36,13 +36,22 @@ model Tag {
   id   String @id
 }
 
+model Download {
+  id   String @id @default(uuid())
+  name String
+  url  String
+
+  Footage   Footage? @relation(fields: [footageId], references: [id])
+  footageId String?
+}
+
 model Footage {
   name String
-  id   String @id
+  id   String @id @default(uuid())
   type String
 
-  useCases  String[] @map("use_cases")
-  downloads String[]
+  useCases  String[]   @map("use_cases")
+  downloads Download[]
 
   tagIds String[] @map("tag_ids")
 }
