@@ -30,3 +30,19 @@ model Session {
   User   User?   @relation(fields: [userId], references: [userId])
   userId String?
 }
+
+model Tag {
+  name String
+  id   String @id
+}
+
+model Footage {
+  name String
+  id   String @id
+  type String
+
+  useCases  String[] @map("use_cases")
+  downloads String[]
+
+  tagIds String[] @map("tag_ids")
+}
