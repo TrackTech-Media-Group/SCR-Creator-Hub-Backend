@@ -1,5 +1,5 @@
 import type { Request, Response } from "express";
-import { ApiRoute, ApplyOptions } from "../../lib/Api/index.js";
+import { ApiRoute, ApplyOptions } from "../../../lib/Api/index.js";
 
 @ApplyOptions({
 	methods: "GET",
