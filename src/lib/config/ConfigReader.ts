@@ -42,6 +42,10 @@ export class ConfigReader {
 				id: this.parseConfigItem("DISCORD_CLIENT_ID"),
 				secret: this.parseConfigItem("DISCORD_CLIENT_SECRET"),
 				callback: this.parseConfigItem("DISCORD_CALLBACK_URL")
+			},
+			upload: {
+				api: this.parseConfigItem("UPLOAD_API"),
+				key: this.parseConfigItem("UPLOAD_API_KEY")
 			}
 		};
 
@@ -60,6 +64,7 @@ export class ConfigReader {
 			case "INTERNAL_API_KEY":
 			case "ENCRYPTION_KEY":
 			case "DISCORD_CLIENT_SECRET":
+			case "UPLOAD_API_KEY":
 				if (typeof value !== "string" || !value.length) throw new Error(`Invalid ${key} provided in .env file`);
 				return value;
 			case "DISCORD_CLIENT_ID": {
@@ -73,6 +78,12 @@ export class ConfigReader {
 				if (urlRegex.test(value)) return value;
 
 				return "http://localhost:3001/auth/callback";
+			}
+			case "UPLOAD_API": {
+				const urlRegex = /^(https?|ftp):\/\/(-\.)?([^\s/?.#-]+\.?)+(\/[^\s]*)?$/;
+				if (urlRegex.test(value)) return value;
+
+				return "https://creatorhub-cdn-dev.dnkl.xyz";
 			}
 			default:
 				return "";
