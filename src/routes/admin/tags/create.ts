@@ -7,6 +7,15 @@ import { ApiRoute, ApplyOptions } from "../../../lib/Api/index.js";
 })
 export default class extends ApiRoute {
 	public override async run(req: Request<object, any, ReqBody>, res: Response) {
+		if (typeof req.body.id !== "string" || !req.body.id.length) {
+			res.status(400).send({ message: "Invalid id provided" });
+			return;
+		}
+		if (typeof req.body.name !== "string" || !req.body.name.length) {
+			res.status(400).send({ message: "Invalid name provided" });
+			return;
+		}
+
 		const tag = await this.server.prisma.tag.findFirst({ where: { OR: { id: req.body.id, name: req.body.name } } });
 		if (tag) {
 			res.status(400).send({ message: "Tag with that name/id already exists" });
