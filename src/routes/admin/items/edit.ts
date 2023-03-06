@@ -9,17 +9,41 @@ import { ApiRoute, ApplyOptions } from "../../../lib/Api/index.js";
 import { Jwt } from "../../../lib/jwt/Jwt.js";
 
 @ApplyOptions({
-	methods: "POST",
+	methods: ["POST", "DELETE"],
 	middleware: ["csrf-protection", "admin-auth"]
 })
 export default class extends ApiRoute {
-	public override run(req: Request, res: Response, next: NextFunction) {
+	public override async run(req: Request, res: Response, next: NextFunction) {
+		if (req.method === "DELETE") {
+			await this.runDelete(req, res);
+			return;
+		}
+
 		multer({
 			storage: multer.diskStorage({
 				destination: join(process.cwd(), "temp"),
 				filename: (req, file, cb) => cb(null, `${Jwt.randomToken(32)}.${file.originalname.split(".").reverse()[0]}`)
 			})
 		}).array("upload")(req, res, () => void this.runFn(req, res));
+	}
+
+	public async runDelete(req: Request, res: Response) {
+		const { id } = req.body as { id: string };
+		if (typeof id !== "string" || !id.length) return this.badReq(res, "Invalid id provided");
+
+		try {
+			const footage = await this.server.prisma.footage.findFirst({ where: { id } });
+			if (!footage) return this.badReq(res, "Unknown footageId provided");
+
+			await this.server.prisma.download.deleteMany({ where: { footageId: id } });
+			await this.server.prisma.footage.delete({ where: { id } });
+
+			const token = this.server.jwt.generateCsrfToken();
+			res.cookie("XSRF-TOKEN", token.token).send({ csrf: token.state });
+		} catch (err) {
+			this.server.logger.fatal(`[DELETE ITEM]: `, err);
+			res.status(500).send({ message: "Unknown server error, please try again later." });
+		}
 	}
 
 	public async runFn(req: Request<object, any, { data: string }>, res: Response) {
@@ -76,8 +100,7 @@ export default class extends ApiRoute {
 			this.server.logger.fatal(`[EDIT ITEM]: `, err);
 
 			await rm(join(process.cwd(), "temp")).catch(() => void 0);
-			const token = this.server.jwt.generateCsrfToken();
-			res.cookie("XSRF-TOKEN", token.token).status(500).send({ message: "Unknown server error, please try again later." });
+			res.status(500).send({ message: "Unknown server error, please try again later." });
 		}
 	}
 
