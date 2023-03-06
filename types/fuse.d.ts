@@ -2,30 +2,29 @@
 // TypeScript v4.5.4
 
 declare module "fuse.js" {
-	export as namespace Fuse;
 	export default class Fuse<T> {
-		public constructor(list: ReadonlyArray<T>, options?: Fuse.IFuseOptions<T>, index?: Fuse.FuseIndex<T>);
+		public constructor(list: ReadonlyArray<T>, options?: IFuseOptions<T>, index?: FuseIndex<T>);
 		/**
 			 * Search function for the Fuse instance.
 			 *
 			 * ```typescript
 			 * const list: MyType[] = [myType1, myType2, etc...]
 	
-			 * const options: Fuse.IFuseOptions<MyType> = {
+			 * const options: IFuseOptions<MyType> = {
 			 *  keys: ['key1', 'key2']
 			 * }
 			 *
 			 * const myFuse = new Fuse(list, options)
-			 * let result = myFuse.search('pattern')
+			 * let result = mysearch('pattern')
 			 * ```
 			 *
 			 * @param pattern The pattern to search
-			 * @param options `Fuse.FuseSearchOptions`
+			 * @param options `FuseSearchOptions`
 			 * @returns An array of search results
 			 */
-		public search<R = T>(pattern: string | Fuse.Expression, options?: Fuse.FuseSearchOptions): Fuse.FuseResult<R>[];
+		public search<R = T>(pattern: string | Expression, options?: FuseSearchOptions): FuseResult<R>[];
 
-		public publicsetCollection(docs: ReadonlyArray<T>, index?: Fuse.FuseIndex<T>): void;
+		public publicsetCollection(docs: ReadonlyArray<T>, index?: FuseIndex<T>): void;
 
 		/**
 		 * Adds a doc to the end the list.
@@ -47,7 +46,7 @@ declare module "fuse.js" {
 		/**
 		 * Returns the generated Fuse index
 		 */
-		public getIndex(): Fuse.FuseIndex<T>;
+		public getIndex(): FuseIndex<T>;
 
 		/**
 		 * Return the current version.
@@ -64,12 +63,12 @@ declare module "fuse.js" {
 		 * ```typescript
 		 * const list: MyType[] = [myType1, myType2, etc...]
 		 *
-		 * const index = Fuse.createIndex<MyType>(
+		 * const index = createIndex<MyType>(
 		 *  keys: ['key1', 'key2']
 		 *  list: list
 		 * )
 		 *
-		 * const options: Fuse.IFuseOptions<MyType> = {
+		 * const options: IFuseOptions<MyType> = {
 		 *  keys: ['key1', 'key2']
 		 * }
 		 *
@@ -80,13 +79,9 @@ declare module "fuse.js" {
 		 * @param options?
 		 * @returns An indexed list
 		 */
-		public static createIndex<U>(
-			keys: Array<Fuse.FuseOptionKey<U>>,
-			list: ReadonlyArray<U>,
-			options?: Fuse.FuseIndexOptions<U>
-		): Fuse.FuseIndex<U>;
+		public static createIndex<U>(keys: Array<FuseOptionKey<U>>, list: ReadonlyArray<U>, options?: FuseIndexOptions<U>): FuseIndex<U>;
 
-		public static parseIndex<U>(index: any, options?: Fuse.FuseIndexOptions<U>): Fuse.FuseIndex<U>;
+		public static parseIndex<U>(index: any, options?: FuseIndexOptions<U>): FuseIndex<U>;
 	}
 
 	export class FuseIndex<T> {
@@ -292,4 +287,6 @@ declare module "fuse.js" {
 		| { $or?: Expression[] };
 
 	export const config: Required<IFuseOptions<any>>;
+
+	export as namespace Fuse;
 }
