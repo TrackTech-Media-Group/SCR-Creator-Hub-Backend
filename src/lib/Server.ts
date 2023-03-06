@@ -8,6 +8,7 @@ import { Jwt } from "./jwt/Jwt.js";
 import { UserManager } from "./User/UserManager.js";
 import cors from "cors";
 import cookieParser from "cookie-parser";
+import bodyParser from "body-parser";
 import { MiddlewareHandler } from "./Middleware/Handler.js";
 
 export default class Server {
@@ -36,7 +37,11 @@ export default class Server {
 	}
 
 	public async start() {
-		this.server.use(cors({ credentials: true, origin: ["http://localhost:3000", "https://beta.scrcreate.app"] }), cookieParser());
+		this.server.use(
+			cors({ credentials: true, origin: ["http://localhost:3000", "https://beta.scrcreate.app"] }),
+			cookieParser(),
+			bodyParser.json()
+		);
 
 		await this.config.start();
 		await this.middleware.start();

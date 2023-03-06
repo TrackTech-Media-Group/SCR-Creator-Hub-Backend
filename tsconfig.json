@@ -5,8 +5,9 @@
 		"noUnusedParameters": false,
 		"useUnknownInCatchVariables": false,
 		"module": "ESNext",
-		"moduleResolution": "NodeNext"
+		"moduleResolution": "NodeNext",
+		"skipLibCheck": true
 	},
 	"exclude": ["node_modules"],
-	"include": ["./src/**/*"]
+	"include": ["./src/**/*", "./types/*.d.ts"]
 }

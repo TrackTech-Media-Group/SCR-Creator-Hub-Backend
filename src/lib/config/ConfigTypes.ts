@@ -7,13 +7,19 @@ export const DEFAULT_RAW_ENV = {
 	DISCORD_CLIENT_ID: "",
 	DISCORD_CLIENT_SECRET: "",
 	DISCORD_CALLBACK_URL: "http://localhost:3001/auth/callback",
-	DATABASE_URL: "postgresql://myuser:mypassword@localhost:5432/db?schema=public"
+	DATABASE_URL: "postgresql://myuser:mypassword@localhost:5432/db?schema=public",
+	UPLOAD_API: "https://creatorhub-dev-cdn.dnkl.xyz",
+	UPLOAD_API_KEY: ""
 } as const;
 
 export interface EnvConfig {
 	port: number;
 	internalApiKey: string;
 	encryptionKey: string;
+	upload: {
+		api: string;
+		key: string;
+	};
 	discord: {
 		id: string;
 		secret: string;

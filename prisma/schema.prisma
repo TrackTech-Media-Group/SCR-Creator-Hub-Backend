@@ -30,3 +30,28 @@ model Session {
   User   User?   @relation(fields: [userId], references: [userId])
   userId String?
 }
+
+model Tag {
+  name String
+  id   String @id
+}
+
+model Download {
+  id   String @id @default(uuid())
+  name String
+  url  String
+
+  Footage   Footage? @relation(fields: [footageId], references: [id])
+  footageId String?
+}
+
+model Footage {
+  name String
+  id   String @id @default(uuid())
+  type String
+
+  useCases  String[]   @map("use_cases")
+  downloads Download[]
+
+  tagIds String[] @map("tag_ids")
+}
