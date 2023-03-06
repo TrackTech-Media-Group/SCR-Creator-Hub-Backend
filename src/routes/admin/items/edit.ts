@@ -39,7 +39,11 @@ export default class extends ApiRoute {
 			await this.server.prisma.footage.delete({ where: { id } });
 
 			const token = this.server.jwt.generateCsrfToken();
-			res.cookie("XSRF-TOKEN", token.token).send({ csrf: token.state });
+			const host = req.headers.origin ?? req.headers.host ?? "https://scrcreate.app";
+			const [ext, domain] = host.replace("http://", "").replace("https://", "").split(".").reverse();
+			res.cookie("XSRF-TOKEN", token.token, { domain: process.env.NODE_ENV === "development" ? undefined : `.${domain}.${ext}` }).send({
+				csrf: token.state
+			});
 		} catch (err) {
 			this.server.logger.fatal(`[DELETE ITEM]: `, err);
 			res.status(500).send({ message: "Unknown server error, please try again later." });
@@ -95,7 +99,12 @@ export default class extends ApiRoute {
 			});
 
 			const token = this.server.jwt.generateCsrfToken();
-			res.cookie("XSRF-TOKEN", token.token).send({ data: footage, csrf: token.state });
+			const host = req.headers.origin ?? req.headers.host ?? "https://scrcreate.app";
+			const [ext, domain] = host.replace("http://", "").replace("https://", "").split(".").reverse();
+			res.cookie("XSRF-TOKEN", token.token, { domain: process.env.NODE_ENV === "development" ? undefined : `.${domain}.${ext}` }).send({
+				data: footage,
+				csrf: token.state
+			});
 		} catch (err) {
 			this.server.logger.fatal(`[EDIT ITEM]: `, err);
 

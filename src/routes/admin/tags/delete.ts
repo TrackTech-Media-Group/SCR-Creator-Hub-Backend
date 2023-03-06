@@ -21,7 +21,11 @@ export default class extends ApiRoute {
 			await this.server.prisma.footage.update({ where: { id: footage.id }, data: { tagIds: footage.tagIds.filter((t) => t !== tag.id) } });
 		}
 
-		res.cookie("XSRF-TOKEN", token.token).send({ csrf: token.state });
+		const host = req.headers.origin ?? req.headers.host ?? "https://scrcreate.app";
+		const [ext, domain] = host.replace("http://", "").replace("https://", "").split(".").reverse();
+		res.cookie("XSRF-TOKEN", token.token, { domain: process.env.NODE_ENV === "development" ? undefined : `.${domain}.${ext}` }).send({
+			csrf: token.state
+		});
 	}
 }
 
