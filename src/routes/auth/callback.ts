@@ -24,7 +24,7 @@ export default class extends ApiRoute {
 
 			res.cookie("CH-SESSION", sessionJwt, {
 				expires: new Date(Date.now() + 8.035e9),
-				domain: `.${req.hostname.split(".").reverse().slice(0, 2).reverse().join(".")}`
+				domain: process.env.NODE_ENV === "development" ? undefined : `.${req.hostname.split(".").reverse().slice(0, 2).reverse().join(".")}`
 			}).sendStatus(204);
 		} catch (err) {
 			if ("errors" in err) {
