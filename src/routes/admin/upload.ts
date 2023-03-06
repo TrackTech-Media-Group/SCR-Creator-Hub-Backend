@@ -59,6 +59,9 @@ export default class extends ApiRoute {
 							return { url: d.url, name: `${foundDownload.type} • ${foundDownload!.dimensions} • ${d.ext}` };
 						})
 					}
+				},
+				include: {
+					downloads: true
 				}
 			});
 
