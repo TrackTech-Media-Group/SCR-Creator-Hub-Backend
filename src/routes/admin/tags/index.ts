@@ -3,7 +3,7 @@ import { ApiRoute, ApplyOptions } from "../../../lib/Api/index.js";
 
 @ApplyOptions({
 	methods: "GET",
-	middleware: ["admin-auth"]
+	middleware: []
 })
 export default class extends ApiRoute {
 	public override async run(req: Request, res: Response) {
