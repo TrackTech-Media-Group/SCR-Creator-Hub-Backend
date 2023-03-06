@@ -4,7 +4,7 @@ import _ from "lodash";
 
 @ApplyOptions({
 	methods: "GET",
-	middleware: []
+	middleware: ["internal-api"]
 })
 export default class extends ApiRoute {
 	public override async run(req: Request, res: Response) {
