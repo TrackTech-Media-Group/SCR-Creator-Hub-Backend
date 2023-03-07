@@ -37,6 +37,7 @@ export default class extends ApiRoute {
 
 			await this.server.prisma.download.deleteMany({ where: { footageId: id } });
 			await this.server.prisma.footage.delete({ where: { id } });
+			await this.server.userManager.cache.handleDeleteFootage(id);
 
 			const token = this.server.jwt.generateCsrfToken();
 			const host = req.headers.origin ?? req.headers.host ?? "https://scrcreate.app";

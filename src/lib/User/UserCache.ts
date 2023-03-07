@@ -40,4 +40,24 @@ export class UserCache {
 
 		await this.userManager.server.prisma.user.update({ where: { userId }, data: { recent: [footageId, ...(user.recent ?? [])].slice(0, 100) } });
 	}
+
+	/**
+	 * Deletes footageId from views and bookmarks list
+	 * @param footageId The id of the footage you want to remove
+	 */
+	public async handleDeleteFootage(footageId: string) {
+		const users = await this.userManager.server.prisma.user.findMany();
+		const requests = [];
+
+		for (const user of users) {
+			const req = this.userManager.server.prisma.user.update({
+				where: { userId: user.userId },
+				data: { bookmarks: user.bookmarks.filter((b) => b !== footageId), recent: user.recent.filter((r) => r !== footageId) }
+			});
+
+			requests.push(req);
+		}
+
+		await this.userManager.server.prisma.$transaction(requests);
+	}
 }
