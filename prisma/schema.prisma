@@ -15,6 +15,8 @@ model User {
   userId   String @id @map("user_id")
 
   createdAt DateTime @map("created_at")
+  bookmarks String[] @default([])
+  recent    String[] @default([])
 
   sessions Session[]
 }
