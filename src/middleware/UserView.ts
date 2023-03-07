@@ -9,7 +9,7 @@ import type { User } from "@prisma/client";
 })
 export default class extends Middleware {
 	public override async run(req: UserApiRequest, res: Response, next: NextFunction): Promise<void> {
-		const session = req.cookies["CH-SESSION"];
+		const session = req.headers["x-user-token"];
 		if (typeof session !== "string") {
 			next();
 			return;
