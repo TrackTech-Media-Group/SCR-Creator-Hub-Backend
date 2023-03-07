@@ -15,7 +15,7 @@ export default class extends ApiRoute {
 			}
 		}
 
-		const randomItems = [...getRandomItem()];
+		const randomItems = [...getRandomItem()].filter(Boolean);
 		res.send(
 			randomItems.map((footage) => ({
 				name: footage.name,

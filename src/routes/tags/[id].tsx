@@ -31,7 +31,7 @@ export default class extends ApiRoute {
 		const chunkArr = (page > chunks.length ? chunks[chunks.length - 1] : chunks[page]) ?? [];
 
 		res.send({
-			entries: chunkArr.map((footage) => ({
+			entries: chunkArr.filter(Boolean).map((footage) => ({
 				name: footage.name,
 				id: footage.id,
 				preview: footage.downloads.find((d) => d.name.startsWith("HD"))?.url ?? footage.downloads[0].url

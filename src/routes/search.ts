@@ -26,7 +26,7 @@ export default class extends ApiRoute {
 		const chunkArr = (page > chunks.length ? chunks[chunks.length - 1] : chunks[page]) ?? [];
 
 		res.send({
-			entries: chunkArr.map((f) => ({
+			entries: chunkArr.filter(Boolean).map((f) => ({
 				name: f.name,
 				id: f.id,
 				type: f.type,
