@@ -31,6 +31,10 @@ export default class extends Middleware {
 		}
 
 		if (!req.params.id) return next();
+
+		const footage = await this.server.prisma.footage.findFirst({ where: { id: req.params.id } });
+		if (!footage) return next();
+
 		await this.server.userManager.cache.handleView(sessionData.User.userId, req.params.id);
 
 		next();
