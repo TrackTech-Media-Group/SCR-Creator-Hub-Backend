@@ -20,12 +20,14 @@ export default class extends ApiRoute {
 			bookmarks: bookmarks.map((footage) => ({
 				name: footage.name,
 				id: footage.id,
+				type: footage.type,
 				tags: footage.tagIds.map((t) => tags.find((tag) => tag.id === t)?.name).filter(Boolean),
 				preview: footage.downloads.find((d) => d.name.startsWith("HD"))?.url ?? footage.downloads[0].url
 			})),
 			recent: recent.map((footage) => ({
 				name: footage.name,
 				id: footage.id,
+				type: footage.type,
 				preview: footage.downloads.find((d) => d.name.startsWith("HD"))?.url ?? footage.downloads[0].url
 			})),
 			dataRequest: null
