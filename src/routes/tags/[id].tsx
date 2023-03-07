@@ -26,7 +26,7 @@ export default class extends ApiRoute {
 			return;
 		}
 
-		const footage = await this.server.prisma.footage.findMany({ where: { type }, include: { downloads: true } });
+		const footage = await this.server.prisma.footage.findMany({ where: { type, tagIds: { has: tag } }, include: { downloads: true } });
 		const chunks = _.chunk(footage, 100);
 		const chunkArr = (page > chunks.length ? chunks[chunks.length - 1] : chunks[page]) ?? [];
 
