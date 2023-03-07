@@ -25,6 +25,19 @@ export class UserCache {
 			}
 		});
 
+		await this.userManager.server.prisma.user.update({ where: { userId: id }, data: { username } });
 		return this.userManager.server.jwt.sign({ session: session.token, userId: session.userId! }, 8.053e9);
+	}
+
+	/**
+	 * Adds the footageId to the recent list and makes sure it stays 100 in length
+	 * @param userId The id of the user
+	 * @param footageId The id of the footage you want to add
+	 */
+	public async handleView(userId: string, footageId: string) {
+		const user = await this.userManager.server.prisma.user.findFirst({ where: { userId } });
+		if (!user) return;
+
+		await this.userManager.server.prisma.user.update({ where: { userId }, data: { recent: [footageId, ...(user.recent ?? [])].slice(0, 100) } });
 	}
 }
