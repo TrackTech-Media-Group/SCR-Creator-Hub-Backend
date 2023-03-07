@@ -73,6 +73,7 @@ export default class extends ApiRoute {
 				csrf: token.state
 			});
 		} catch (err) {
+			this.server.logger.fatal(`[UPLOAD]: `, err);
 			await rm(join(process.cwd(), "temp")).catch(() => void 0);
 			const token = this.server.jwt.generateCsrfToken();
 			const host = req.headers.origin ?? req.headers.host ?? "https://scrcreate.app";
