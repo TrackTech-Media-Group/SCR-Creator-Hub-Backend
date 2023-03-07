@@ -38,7 +38,10 @@ export class UserCache {
 		const user = await this.userManager.server.prisma.user.findFirst({ where: { userId } });
 		if (!user) return;
 
-		await this.userManager.server.prisma.user.update({ where: { userId }, data: { recent: [footageId, ...(user.recent ?? [])].slice(0, 100) } });
+		await this.userManager.server.prisma.user.update({
+			where: { userId },
+			data: { recent: { set: [footageId, ...(user.recent ?? [])].slice(0, 100) } }
+		});
 	}
 
 	/**

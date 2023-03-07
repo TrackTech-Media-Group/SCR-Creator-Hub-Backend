@@ -12,7 +12,8 @@ export default class extends ApiRoute {
 			where: { id: { in: req.locals.user.bookmarks } },
 			include: { downloads: true }
 		});
-		const recent = await this.server.prisma.footage.findMany({ where: { id: { in: req.locals.user.recent } }, include: { downloads: true } });
+		const recentAll = await this.server.prisma.footage.findMany({ include: { downloads: true } });
+		const recent = req.locals.user.recent.map((id) => recentAll.find((r) => r.id === id)).filter(Boolean) as typeof recentAll;
 		const tags = await this.server.prisma.tag.findMany();
 
 		res.send({
