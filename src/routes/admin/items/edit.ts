@@ -72,7 +72,7 @@ export default class extends ApiRoute {
 		try {
 			const correctDownloads = await this.uploadFiles((req.files ?? []) as Express.Multer.File[]);
 			const existing = await this.server.prisma.download.findMany({ where: { footageId: id } });
-			const foundTags = await this.server.prisma.tag.findMany({ where: { name: { in: tags } } });
+			const foundTags = await this.server.prisma.tag.findMany({ where: { id: { in: tags } } });
 			const footage = await this.server.prisma.footage.update({
 				where: {
 					id
