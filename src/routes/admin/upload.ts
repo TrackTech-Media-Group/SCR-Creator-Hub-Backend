@@ -75,7 +75,11 @@ export default class extends ApiRoute {
 		} catch (err) {
 			await rm(join(process.cwd(), "temp")).catch(() => void 0);
 			const token = this.server.jwt.generateCsrfToken();
-			res.cookie("XSRF-TOKEN", token.token).status(500).send({ message: "Unknown server error, please try again later." });
+			const host = req.headers.origin ?? req.headers.host ?? "https://scrcreate.app";
+			const [ext, domain] = host.replace("http://", "").replace("https://", "").split(".").reverse();
+			res.cookie("XSRF-TOKEN", token.token, { domain: process.env.NODE_ENV === "development" ? undefined : `.${domain}.${ext}` })
+				.status(500)
+				.send({ message: "Unknown server error, please try again later." });
 		}
 	}
 
