@@ -6,7 +6,7 @@ import jwt from "jsonwebtoken";
 	methods: "POST"
 })
 export default class extends ApiRoute {
-	private admins = ["304986851310043136", "707741882435764236"];
+	private admins = ["304986851310043136", "707741882435764236", "176622552804884490"];
 
 	public override async run(req: Request, res: Response) {
 		const { authorization } = req.headers;
