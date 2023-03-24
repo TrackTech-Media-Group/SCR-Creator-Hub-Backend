@@ -16,8 +16,16 @@ export default class extends ApiRoute {
 		const page = isNaN(Number(_page)) ? 0 : Number(_page);
 		if (preview) {
 			const data = this.server.data.footage.filter((f) => f.tagIds.includes(tag) && f.type === type);
+			function* getRandomItem() {
+				for (let i = 0; i < 20; i++) {
+					yield data[Math.floor(Math.random() * footage.length)];
+				}
+			}
+
+			const randomItems = [...getRandomItem()].filter(Boolean);
+
 			res.send(
-				data.slice(0, 20).map((footage) => ({
+				randomItems.map((footage) => ({
 					name: footage.name,
 					id: footage.id,
 					preview: footage.downloads.find((d) => d.name.startsWith("HD"))?.url ?? footage.downloads[0].url
