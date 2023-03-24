@@ -18,7 +18,7 @@ export default class extends ApiRoute {
 			const data = this.server.data.footage.filter((f) => f.tagIds.includes(tag) && f.type === type);
 			function* getRandomItem() {
 				for (let i = 0; i < 20; i++) {
-					yield data[Math.floor(Math.random() * footage.length)];
+					yield data[Math.floor(Math.random() * data.length)];
 				}
 			}
 
