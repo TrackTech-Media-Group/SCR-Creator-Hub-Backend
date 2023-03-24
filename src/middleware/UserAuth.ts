@@ -8,7 +8,7 @@ import type { User } from "@prisma/client";
 	name: "user-auth"
 })
 export default class extends Middleware {
-	public override async run(req: UserApiRequest, res: Response, next: NextFunction): Promise<void> {
+	public override run(req: UserApiRequest, res: Response, next: NextFunction): void {
 		const session = req.cookies["CH-SESSION"];
 		if (typeof session !== "string") {
 			res.status(401).send({ message: "Unauthorized." });
@@ -21,16 +21,13 @@ export default class extends Middleware {
 			return;
 		}
 
-		const sessionData = await this.server.prisma.session.findFirst({
-			where: { token: token.session, userId: token.userId },
-			include: { User: true }
-		});
-		if (!sessionData || sessionData.expirationDate.getTime() <= Date.now() || !sessionData.User) {
+		const sessionData = this.server.data.getSession(token.session, token.userId);
+		if (!sessionData || sessionData.session.expirationDate.getTime() <= Date.now()) {
 			res.status(401).send({ message: "Unauthorized." });
 			return;
 		}
 
-		req.locals = { user: sessionData.User };
+		req.locals = { user: sessionData.user };
 
 		next();
 	}

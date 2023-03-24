@@ -24,6 +24,7 @@ export default class extends ApiRoute {
 
 		const token = this.server.jwt.generateCsrfToken();
 		const createdTag = await this.server.prisma.tag.create({ data: { id: req.body.id, name: req.body.name } });
+		this.server.data.tags.push(createdTag);
 
 		const host = req.headers.origin ?? req.headers.host ?? "https://scrcreate.app";
 		const [ext, domain] = host.replace("http://", "").replace("https://", "").split(".").reverse();

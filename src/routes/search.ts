@@ -8,16 +8,13 @@ import { chunk } from "../lib/Utils.js";
 	middleware: []
 })
 export default class extends ApiRoute {
-	public override async run(req: Request, res: Response) {
+	public override run(req: Request, res: Response) {
 		const { query: _search, tag: _tag, page: _page } = req.query;
 		const searchQ = typeof _search === "string" ? _search : "";
 		const tag = typeof _tag === "string" ? _tag : "";
 		const page = isNaN(Number(_page)) ? 0 : Number(_page);
 
-		let footage = await this.server.prisma.footage.findMany({
-			include: { downloads: true },
-			where: tag.length ? { tagIds: { has: tag } } : undefined
-		});
+		let footage = this.server.data.footage.filter((f) => (tag.length ? f.tagIds.includes(tag) : true));
 		if (searchQ.length) {
 			const search = new Fuse(footage, {
 				keys: ["name", "useCases", "tagIds"],

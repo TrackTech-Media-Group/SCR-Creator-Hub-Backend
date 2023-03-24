@@ -39,6 +39,8 @@ export default class extends ApiRoute {
 			await this.server.prisma.footage.delete({ where: { id } });
 			await this.server.userManager.cache.handleDeleteFootage(id);
 
+			this.server.data.footage = this.server.data.footage.filter((f) => f.id !== id);
+
 			const token = this.server.jwt.generateCsrfToken();
 			const host = req.headers.origin ?? req.headers.host ?? "https://scrcreate.app";
 			const [ext, domain] = host.replace("http://", "").replace("https://", "").split(".").reverse();
@@ -98,6 +100,9 @@ export default class extends ApiRoute {
 					downloads: true
 				}
 			});
+
+			const filtered = this.server.data.footage.filter((f) => f.id !== id);
+			this.server.data.footage = [...filtered, footage];
 
 			const token = this.server.jwt.generateCsrfToken();
 			const host = req.headers.origin ?? req.headers.host ?? "https://scrcreate.app";

@@ -8,18 +8,18 @@ import jwt from "jsonwebtoken";
 	middleware: ["internal-api", "user-view"]
 })
 export default class extends ApiRoute {
-	public override async run(req: Request, res: Response) {
+	public override run(req: Request, res: Response) {
 		const { id } = req.params;
 
-		const tags = await this.server.prisma.tag.findMany();
-		const footage = await this.server.prisma.footage.findFirst({ where: { id }, include: { downloads: true } });
+		const { tags } = this.server.data;
+		const footage = this.server.data.footage.find((f) => f.id === id);
 		if (!footage) {
 			res.sendStatus(404);
 			return;
 		}
 
 		const preview = (footage.downloads.find((d) => d.name.startsWith("HD")) ?? footage.downloads[0]).url;
-		const marked = await this.getMarked(req, res);
+		const marked = this.getMarked(req, res);
 
 		res.send({
 			...footage,
@@ -30,7 +30,7 @@ export default class extends ApiRoute {
 		});
 	}
 
-	private async getMarked(req: Request, res: Response) {
+	private getMarked(req: Request, res: Response) {
 		const session = req.headers["x-user-token"];
 		if (typeof session !== "string") {
 			return false;
@@ -41,15 +41,12 @@ export default class extends ApiRoute {
 			return false;
 		}
 
-		const sessionData = await this.server.prisma.session.findFirst({
-			where: { token: token.session, userId: token.userId },
-			include: { User: true }
-		});
-		if (!sessionData || sessionData.expirationDate.getTime() <= Date.now() || !sessionData.User) {
+		const sessionData = this.server.data.getSession(token.session, token.userId);
+		if (!sessionData || sessionData.session.expirationDate.getTime() <= Date.now()) {
 			return false;
 		}
 
-		if (sessionData.User.bookmarks.includes(req.params.id)) return true;
+		if (sessionData.user.bookmarks.includes(req.params.id)) return true;
 		return false;
 	}
 }

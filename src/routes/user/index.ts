@@ -7,14 +7,12 @@ import type { UserApiRequest } from "../../middleware/UserAuth.js";
 	middleware: ["user-auth"]
 })
 export default class extends ApiRoute {
-	public override async run(req: UserApiRequest, res: Response) {
-		const bookmarks = await this.server.prisma.footage.findMany({
-			where: { id: { in: req.locals.user.bookmarks } },
-			include: { downloads: true }
-		});
-		const recentAll = await this.server.prisma.footage.findMany({ include: { downloads: true } });
-		const recent = req.locals.user.recent.map((id) => recentAll.find((r) => r.id === id)).filter(Boolean) as typeof recentAll;
-		const tags = await this.server.prisma.tag.findMany();
+	public override run(req: UserApiRequest, res: Response) {
+		const bookmarks = this.server.data.footage.filter((f) => req.locals.user.bookmarks.includes(f.id));
+		const recent = req.locals.user.recent
+			.map((id) => this.server.data.footage.find((r) => r.id === id))
+			.filter(Boolean) as typeof this.server.data.footage;
+		const { tags } = this.server.data;
 
 		res.send({
 			name: req.locals.user.username,

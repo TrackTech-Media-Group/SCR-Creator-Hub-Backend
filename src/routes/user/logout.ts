@@ -25,14 +25,18 @@ export default class extends ApiRoute {
 			return;
 		}
 
-		const session = await this.server.prisma.session.findFirst({ where: { token: token.session, userId: token.userId } });
-		if (!session || session.expirationDate.getTime() <= Date.now()) {
+		const session = this.server.data.getSession(token.session, token.userId);
+		if (!session || session.session.expirationDate.getTime() <= Date.now()) {
 			res.sendStatus(204);
 			return;
 		}
 
-		await this.server.userManager.oauth2.revokeToken(this.server.jwt.decrypt(session.accessToken));
-		await this.server.prisma.session.delete({ where: { token: session.token } });
+		await this.server.userManager.oauth2.revokeToken(this.server.jwt.decrypt(session.session.accessToken));
+		await this.server.prisma.session.delete({ where: { token: session.session.token } });
+
+		const user = { ...session.user, sessions: session.user.sessions.filter((s) => s.token !== session.session.token) };
+		this.server.data.users.set(user.userId, user);
+
 		res.sendStatus(204);
 	}
 }

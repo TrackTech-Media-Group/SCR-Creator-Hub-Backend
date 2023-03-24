@@ -16,17 +16,22 @@ export default class extends ApiRoute {
 			return;
 		}
 
-		const footage = await this.server.prisma.footage.findFirst({ where: { id } });
+		const footage = this.server.data.footage.find((f) => f.id === id);
 		if (!footage) {
 			res.status(404).send({ message: "Footage not found" });
 			return;
 		}
 
 		if (req.locals.user.bookmarks.includes(id)) {
+			const bookmarks = req.locals.user.bookmarks.filter((b) => b !== id);
 			await this.server.prisma.user.update({
 				where: { userId: req.locals.user.userId },
-				data: { bookmarks: { set: req.locals.user.bookmarks.filter((b) => b !== id) } }
+				data: { bookmarks: { set: bookmarks } }
 			});
+
+			const cacheUser = this.server.data.users.get(req.locals.user.userId)!;
+			const user = { ...req.locals.user, bookmarks, sessions: cacheUser.sessions };
+			this.server.data.users.set(user.userId, user);
 
 			const token = this.server.jwt.generateCsrfToken();
 			const host = req.headers.origin ?? req.headers.host ?? "https://scrcreate.app";
@@ -44,6 +49,10 @@ export default class extends ApiRoute {
 		}
 
 		await this.server.prisma.user.update({ where: { userId: req.locals.user.userId }, data: { bookmarks: { push: id } } });
+
+		const cacheUser = this.server.data.users.get(req.locals.user.userId)!;
+		const user = { ...req.locals.user, bookmarks: [...cacheUser.bookmarks, id], sessions: cacheUser.sessions };
+		this.server.data.users.set(user.userId, user);
 
 		const token = this.server.jwt.generateCsrfToken();
 		const host = req.headers.origin ?? req.headers.host ?? "https://scrcreate.app";

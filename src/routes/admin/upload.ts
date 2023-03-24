@@ -65,6 +65,8 @@ export default class extends ApiRoute {
 				}
 			});
 
+			this.server.data.footage.push(footage);
+
 			const token = this.server.jwt.generateCsrfToken();
 			const host = req.headers.origin ?? req.headers.host ?? "https://scrcreate.app";
 			const [ext, domain] = host.replace("http://", "").replace("https://", "").split(".").reverse();

@@ -6,8 +6,7 @@ import { ApiRoute, ApplyOptions } from "../../../lib/Api/index.js";
 	middleware: []
 })
 export default class extends ApiRoute {
-	public override async run(req: Request, res: Response) {
-		const tags = await this.server.prisma.tag.findMany();
-		res.send(tags);
+	public override run(req: Request, res: Response) {
+		res.send(this.server.data.tags);
 	}
 }

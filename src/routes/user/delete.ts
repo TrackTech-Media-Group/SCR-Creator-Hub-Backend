@@ -11,6 +11,8 @@ export default class extends ApiRoute {
 		try {
 			await this.server.userManager.sessions.deleteSessions(req.locals.user.userId);
 			await this.server.prisma.user.delete({ where: { userId: req.locals.user.userId } });
+			this.server.data.users.delete(req.locals.user.userId);
+
 			res.sendStatus(204);
 		} catch (err) {
 			this.server.logger.fatal(`[DELETE-USER]: `, err);

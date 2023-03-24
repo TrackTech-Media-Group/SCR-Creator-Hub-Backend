@@ -25,6 +25,8 @@ export class UserSessions {
 		}
 
 		await this.userManager.server.prisma.session.deleteMany({ where: { userId } });
+		const user = (await this.userManager.server.prisma.user.findFirst({ where: { userId } })) ?? ({} as any);
+		this.userManager.server.data.users.set(userId, { ...user, sessions: [] });
 	}
 
 	/**
@@ -35,6 +37,10 @@ export class UserSessions {
 		const sessions = await this.userManager.server.prisma.session.findMany({ where: { expirationDate: { lte: new Date() } } });
 		for await (const session of sessions) {
 			await this.userManager.oauth2.revokeToken(this.userManager.server.jwt.decrypt(session.accessToken));
+			if (session.userId) {
+				const user = await this.userManager.server.prisma.user.findFirst({ where: { userId: session.userId }, include: { sessions: true } });
+				if (user) this.userManager.server.data.users.set(session.userId, user);
+			}
 		}
 
 		await this.userManager.server.prisma.session.deleteMany({ where: { token: { in: sessions.map((session) => session.token) } } });

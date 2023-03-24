@@ -7,7 +7,7 @@ import _ from "lodash";
 	middleware: []
 })
 export default class extends ApiRoute {
-	public override async run(req: Request, res: Response) {
+	public override run(req: Request, res: Response) {
 		const { id: tag } = req.params;
 		const { preview: _preview, type: _type, page: _page } = req.query;
 
@@ -15,7 +15,7 @@ export default class extends ApiRoute {
 		const type = typeof _type === "string" && ["video", "image"].includes(_type) ? _type : "image";
 		const page = isNaN(Number(_page)) ? 0 : Number(_page);
 		if (preview) {
-			const data = await this.server.prisma.footage.findMany({ where: { tagIds: { has: tag }, type }, include: { downloads: true } });
+			const data = this.server.data.footage.filter((f) => f.tagIds.includes(tag) && f.type === type);
 			res.send(
 				data.slice(0, 20).map((footage) => ({
 					name: footage.name,
@@ -26,7 +26,7 @@ export default class extends ApiRoute {
 			return;
 		}
 
-		const footage = await this.server.prisma.footage.findMany({ where: { type, tagIds: { has: tag } }, include: { downloads: true } });
+		const footage = this.server.data.footage.filter((f) => f.tagIds.includes(tag) && f.type === type);
 		const chunks = _.chunk(footage, 100);
 		const chunkArr = (page > chunks.length ? chunks[chunks.length - 1] : chunks[page]) ?? [];
 

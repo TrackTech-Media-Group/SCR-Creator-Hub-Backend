@@ -21,21 +21,18 @@ export default class extends Middleware {
 			return;
 		}
 
-		const sessionData = await this.server.prisma.session.findFirst({
-			where: { token: token.session, userId: token.userId },
-			include: { User: true }
-		});
-		if (!sessionData || sessionData.expirationDate.getTime() <= Date.now() || !sessionData.User) {
+		const sessionData = this.server.data.getSession(token.session, token.userId);
+		if (!sessionData || sessionData.session.expirationDate.getTime() <= Date.now()) {
 			next();
 			return;
 		}
 
 		if (!req.params.id) return next();
 
-		const footage = await this.server.prisma.footage.findFirst({ where: { id: req.params.id } });
+		const footage = this.server.data.footage.find((f) => f.id === req.params.id);
 		if (!footage) return next();
 
-		await this.server.userManager.cache.handleView(sessionData.User.userId, req.params.id);
+		await this.server.userManager.cache.handleView(sessionData.user.userId, footage.id);
 
 		next();
 	}

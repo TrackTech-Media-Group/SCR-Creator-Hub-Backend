@@ -8,7 +8,7 @@ import jwt from "jsonwebtoken";
 export default class extends ApiRoute {
 	private admins = ["304986851310043136", "707741882435764236", "176622552804884490"];
 
-	public override async run(req: Request, res: Response) {
+	public override run(req: Request, res: Response) {
 		const { authorization } = req.headers;
 		if (typeof authorization !== "string") {
 			res.send({ token: "" });
@@ -27,8 +27,8 @@ export default class extends ApiRoute {
 			return;
 		}
 
-		const session = await this.server.prisma.session.findFirst({ where: { token: token.session, userId: token.userId } });
-		if (!session || session.expirationDate.getTime() <= Date.now() || !this.admins.includes(session?.userId ?? "")) {
+		const session = this.server.data.getSession(token.session, token.userId);
+		if (!session || session.session.expirationDate.getTime() <= Date.now() || !this.admins.includes(session.user.userId)) {
 			res.send({ token: "" });
 			return;
 		}

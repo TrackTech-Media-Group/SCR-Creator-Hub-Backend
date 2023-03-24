@@ -7,8 +7,8 @@ import _ from "lodash";
 	middleware: ["internal-api"]
 })
 export default class extends ApiRoute {
-	public override async run(req: Request, res: Response) {
-		const footage = await this.server.prisma.footage.findMany({ include: { downloads: true } });
+	public override run(req: Request, res: Response) {
+		const { footage } = this.server.data;
 		function* getRandomItem() {
 			for (let i = 0; i < 20; i++) {
 				yield footage[Math.floor(Math.random() * footage.length)];

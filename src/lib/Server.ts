@@ -10,6 +10,7 @@ import cors from "cors";
 import cookieParser from "cookie-parser";
 import bodyParser from "body-parser";
 import { MiddlewareHandler } from "./Middleware/Handler.js";
+import { DataHandler } from "./Data/DataHandler.js";
 
 export default class Server {
 	public server: Express;
@@ -19,6 +20,8 @@ export default class Server {
 	public config: Config;
 	public api: ApiHandler;
 	public middleware: MiddlewareHandler;
+
+	public data: DataHandler;
 
 	public jwt: Jwt;
 	public userManager: UserManager;
@@ -31,6 +34,8 @@ export default class Server {
 		this.config = new Config(this);
 		this.api = new ApiHandler(this);
 		this.middleware = new MiddlewareHandler(this);
+
+		this.data = new DataHandler(this);
 
 		this.jwt = new Jwt(this);
 		this.userManager = new UserManager(this);
@@ -47,6 +52,8 @@ export default class Server {
 		await this.middleware.start();
 		await this.api.start();
 		await this.prisma.$connect();
+
+		await this.data.start();
 
 		this.jwt.load();
 		this.userManager.start();

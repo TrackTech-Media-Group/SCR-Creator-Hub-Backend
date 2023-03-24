@@ -25,7 +25,9 @@ export class UserCache {
 			}
 		});
 
-		await this.userManager.server.prisma.user.update({ where: { userId: id }, data: { username } });
+		const user = await this.userManager.server.prisma.user.update({ where: { userId: id }, data: { username }, include: { sessions: true } });
+		this.userManager.server.data.users.set(user.userId, user);
+
 		return this.userManager.server.jwt.sign({ session: session.token, userId: session.userId! }, 8.053e9);
 	}
 
@@ -38,10 +40,12 @@ export class UserCache {
 		const user = await this.userManager.server.prisma.user.findFirst({ where: { userId } });
 		if (!user) return;
 
-		await this.userManager.server.prisma.user.update({
+		const newUser = await this.userManager.server.prisma.user.update({
 			where: { userId },
-			data: { recent: { set: [footageId, ...(user.recent ?? [])].slice(0, 100) } }
+			data: { recent: { set: [footageId, ...(user.recent ?? [])].slice(0, 100) } },
+			include: { sessions: true }
 		});
+		this.userManager.server.data.users.set(newUser.userId, newUser);
 	}
 
 	/**
@@ -62,5 +66,7 @@ export class UserCache {
 		}
 
 		await this.userManager.server.prisma.$transaction(requests);
+		const updatedUsers = await this.userManager.server.prisma.user.findMany({ include: { sessions: true } });
+		updatedUsers.forEach((u) => this.userManager.server.data.users.set(u.userId, u));
 	}
 }
