@@ -17,8 +17,9 @@ export default class extends ApiRoute {
 		if (preview) {
 			const data = this.server.data.footage.filter((f) => f.tagIds.includes(tag) && f.type === type);
 			const randomItems = [] as typeof data;
+			const max = data.length < 20 ? data.length : 20;
 
-			for (let i = 0; i < 20; i++) {
+			for (let i = 0; i < max; i++) {
 				let item = data[Math.floor(Math.random() * data.length)];
 				while (data.includes(item)) item = data[Math.floor(Math.random() * data.length)];
 

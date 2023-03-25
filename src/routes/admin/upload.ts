@@ -3,8 +3,9 @@ import type { NextFunction, Request, Response } from "express";
 import FormData from "form-data";
 import multer from "multer";
 import { createReadStream } from "node:fs";
-import { rm } from "node:fs/promises";
+import { rm, readFile } from "node:fs/promises";
 import { join } from "node:path";
+import sharp from "sharp";
 import { ApiRoute, ApplyOptions } from "../../lib/Api/index.js";
 import { Jwt } from "../../lib/jwt/Jwt.js";
 
@@ -45,7 +46,12 @@ export default class extends ApiRoute {
 			return this.badReq(res, "Invalid downloads array provided");
 
 		try {
+			const previewData = downloads.find((d) => d.type === "HD") || downloads[0];
+			const preview = (req.files as Express.Multer.File[]).find((f) => f.originalname === previewData.name)!;
+			const previewUpload = await this.generatePreview(preview);
+
 			const correctDownloads = await this.uploadFiles(req.files as Express.Multer.File[]);
+
 			const foundTags = await this.server.prisma.tag.findMany({ where: { id: { in: tags } } });
 			const footage = await this.server.prisma.footage.create({
 				data: {
@@ -53,6 +59,7 @@ export default class extends ApiRoute {
 					type,
 					useCases,
 					tagIds: foundTags.map((t) => t.id),
+					preview: previewUpload,
 					downloads: {
 						create: correctDownloads.map((d) => {
 							const foundDownload = downloads.find((v) => v.name === d.name)!;
@@ -105,6 +112,39 @@ export default class extends ApiRoute {
 		}
 
 		return items;
+	}
+
+	private async generatePreview(file: Express.Multer.File) {
+		const buffer = await readFile(file.path);
+		const transformer = sharp(buffer, { sequentialRead: true });
+		transformer.rotate();
+
+		switch (file.originalname.split(".").reverse()[0]) {
+			case "png":
+				transformer.png({ quality: 12 });
+				break;
+			case "jpg":
+			case "jpeg":
+				transformer.jpeg({ quality: 12 });
+				break;
+			case "webp":
+				transformer.webp({ quality: 12 });
+				break;
+		}
+
+		transformer.resize(320, 180);
+		const optBuffer = await transformer.toBuffer();
+
+		const form = new FormData();
+		form.append("upload", optBuffer);
+
+		const req = await axios<{ url: string }>(`${this.server.config.config.upload.api}/api/upload`, {
+			data: form,
+			method: "POST",
+			headers: { Authorization: this.server.config.config.upload.key, "Content-Type": "multipart/form-data" }
+		});
+
+		return req.data.url.replace("http://", "https://");
 	}
 
 	private badReq(res: Response, message: string) {
