@@ -43,7 +43,7 @@ export default class Server {
 
 	public async start() {
 		this.server.use(
-			cors({ credentials: true, origin: ["http://localhost:3000", "https://beta.scrcreate.app"] }),
+			cors({ credentials: true, origin: ["http://localhost:3000", "https://beta.scrcreate.app", "https://scrcreate.app"] }),
 			cookieParser(),
 			bodyParser.json()
 		);
