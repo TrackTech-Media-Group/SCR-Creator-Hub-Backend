@@ -18,7 +18,7 @@ export default class extends ApiRoute {
 			return;
 		}
 
-		const preview = (footage.downloads.find((d) => d.name.startsWith("HD")) ?? footage.downloads[0]).url;
+		const preview = footage.preview || (footage.downloads.find((d) => d.name.startsWith("HD")) ?? footage.downloads[0]).url;
 		const marked = this.getMarked(req, res);
 
 		res.send({

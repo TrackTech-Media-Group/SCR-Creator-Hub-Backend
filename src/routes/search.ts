@@ -31,7 +31,7 @@ export default class extends ApiRoute {
 				name: f.name,
 				id: f.id,
 				type: f.type,
-				preview: (f.downloads.find((d) => d.name.startsWith("HD")) ?? f.downloads[0]).url
+				preview: f.preview || (f.downloads.find((d) => d.name.startsWith("HD")) ?? f.downloads[0]).url
 			})),
 			pages: chunks.length
 		});

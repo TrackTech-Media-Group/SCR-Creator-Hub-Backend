@@ -21,7 +21,7 @@ export default class extends ApiRoute {
 				name: footage.name,
 				id: footage.id,
 				type: footage.type,
-				preview: footage.downloads.find((d) => d.name.startsWith("HD"))?.url ?? footage.downloads[0].url
+				preview: footage.preview || footage.downloads.find((d) => d.name.startsWith("HD"))?.url || footage.downloads[0].url
 			}))
 		);
 	}
