@@ -29,7 +29,7 @@ export default class Server {
 	public constructor() {
 		this.server = express();
 		this.logger = new Logger({ level: LogLevel.Debug });
-		this.prisma = new PrismaClient();
+		this.prisma = new PrismaClient({ log: ["error", "info", "warn"] });
 
 		this.config = new Config(this);
 		this.api = new ApiHandler(this);

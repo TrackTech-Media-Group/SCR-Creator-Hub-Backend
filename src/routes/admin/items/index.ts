@@ -1,7 +1,7 @@
 import type { Request, Response } from "express";
 import Fuse from "fuse.js";
 import { ApiRoute, ApplyOptions } from "../../../lib/Api/index.js";
-import { chunk } from "../../../lib/Utils.js";
+import _ from "lodash";
 
 @ApplyOptions({
 	methods: "GET",
@@ -14,7 +14,9 @@ export default class extends ApiRoute {
 		const type = typeof _type === "string" && ["image", "video"].includes(_type) ? _type : "image";
 		const page = isNaN(Number(_page)) ? 0 : Number(_page);
 
-		let footage = this.server.data.footage.filter((f) => f.type === type);
+		let footage = this.server.data.footage
+			.filter((f) => f.type === type)
+			.map((footage) => ({ ...footage, useCases: footage.useCases.split(","), tagIds: footage.tagIds.split(",") }));
 		if (searchQ.length) {
 			const search = new Fuse(footage, {
 				keys: ["name", "useCases", "tagIds"],
@@ -23,7 +25,7 @@ export default class extends ApiRoute {
 			footage = search.search(searchQ).map((sr) => sr.item);
 		}
 
-		const chunks = chunk(footage, 100);
+		const chunks = _.chunk(footage, 100);
 		const chunkArr = (page > chunks.length ? chunks[chunks.length - 1] : chunks[page]) ?? [];
 
 		res.send({ entries: chunkArr, pages: chunks.length });

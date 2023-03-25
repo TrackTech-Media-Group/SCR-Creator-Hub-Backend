@@ -21,7 +21,9 @@ export class UserCache {
 				refreshToken: this.userManager.server.jwt.encrypt(token.refresh_token),
 				refreshDate,
 				expirationDate,
-				User: { connectOrCreate: { where: { userId: id }, create: { createdAt: new Date(), userId: id, username } } }
+				User: {
+					connectOrCreate: { where: { userId: id }, create: { createdAt: new Date(), userId: id, username, bookmarks: "", recent: "" } }
+				}
 			}
 		});
 
@@ -42,7 +44,7 @@ export class UserCache {
 
 		const newUser = await this.userManager.server.prisma.user.update({
 			where: { userId },
-			data: { recent: { set: [footageId, ...(user.recent ?? [])].slice(0, 100) } },
+			data: { recent: [footageId, ...(user.recent ?? [])].slice(0, 100).join(",") },
 			include: { sessions: true }
 		});
 		this.userManager.server.data.users.set(newUser.userId, newUser);
@@ -59,7 +61,16 @@ export class UserCache {
 		for (const user of users) {
 			const req = this.userManager.server.prisma.user.update({
 				where: { userId: user.userId },
-				data: { bookmarks: user.bookmarks.filter((b) => b !== footageId), recent: user.recent.filter((r) => r !== footageId) }
+				data: {
+					bookmarks: user.bookmarks
+						.split(",")
+						.filter((b) => b !== footageId)
+						.join(","),
+					recent: user.recent
+						.split(",")
+						.filter((r) => r !== footageId)
+						.join(",")
+				}
 			});
 
 			requests.push(req);

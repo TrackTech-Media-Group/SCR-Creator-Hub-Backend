@@ -57,8 +57,8 @@ export default class extends ApiRoute {
 				data: {
 					name,
 					type,
-					useCases,
-					tagIds: foundTags.map((t) => t.id),
+					useCases: useCases.join(","),
+					tagIds: foundTags.map((t) => t.id).join(","),
 					preview: previewUpload,
 					downloads: {
 						create: correctDownloads.map((d) => {
@@ -136,7 +136,7 @@ export default class extends ApiRoute {
 		const optBuffer = await transformer.toBuffer();
 
 		const form = new FormData();
-		form.append("upload", optBuffer);
+		form.append("upload", optBuffer, file.originalname);
 
 		const req = await axios<{ url: string }>(`${this.server.config.config.upload.api}/api/upload`, {
 			data: form,

@@ -20,9 +20,7 @@ export default class extends ApiRoute {
 			const max = data.length < 20 ? data.length : 20;
 
 			for (let i = 0; i < max; i++) {
-				let item = data[Math.floor(Math.random() * data.length)];
-				while (data.includes(item)) item = data[Math.floor(Math.random() * data.length)];
-
+				const item = data[Math.floor(Math.random() * data.length)];
 				randomItems.push(item);
 			}
 
