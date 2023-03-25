@@ -2,6 +2,9 @@ import { PrismaClient } from "@prisma/client";
 import axios from "axios";
 import FormData from "form-data";
 import sharp from "sharp";
+import { config } from "dotenv";
+import { join } from "path";
+config({ path: join(process.cwd(), "data", ".env") });
 
 void (async () => {
 	const prisma = new PrismaClient();
@@ -16,8 +19,7 @@ void (async () => {
 
 		try {
 			console.log(`Downloading the image...`);
-			const { data: image } = await axios.get<Buffer>(download.url);
-
+			const { data: image } = await axios.get<Buffer>(download.url, { responseType: "arraybuffer" });
 			const transformer = sharp(image, { sequentialRead: true });
 			transformer.rotate();
 
@@ -32,6 +34,9 @@ void (async () => {
 				case "webp":
 					transformer.webp({ quality: 12 });
 					break;
+				default:
+					console.log(`Item is not an image, skipping...`);
+					continue;
 			}
 
 			transformer.resize(320, 180);
@@ -40,7 +45,7 @@ void (async () => {
 			console.log(`Optimising complete, uploading...`);
 
 			const form = new FormData();
-			form.append("upload", optBuffer);
+			form.append("upload", optBuffer, `optimised.${download.url.split(".").reverse()[0]}`);
 
 			const req = await axios<{ url: string }>(`${process.env.UPLOAD_API}/api/upload`, {
 				data: form,
