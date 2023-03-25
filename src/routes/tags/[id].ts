@@ -16,13 +16,14 @@ export default class extends ApiRoute {
 		const page = isNaN(Number(_page)) ? 0 : Number(_page);
 		if (preview) {
 			const data = this.server.data.footage.filter((f) => f.tagIds.includes(tag) && f.type === type);
-			function* getRandomItem() {
-				for (let i = 0; i < 20; i++) {
-					yield data[Math.floor(Math.random() * data.length)];
-				}
-			}
+			const randomItems = [] as typeof data;
 
-			const randomItems = [...getRandomItem()].filter(Boolean);
+			for (let i = 0; i < 20; i++) {
+				let item = data[Math.floor(Math.random() * data.length)];
+				while (data.includes(item)) item = data[Math.floor(Math.random() * data.length)];
+
+				randomItems.push(item);
+			}
 
 			res.send(
 				randomItems.map((footage) => ({
