@@ -54,6 +54,7 @@ model Footage {
 
   useCases  String[]   @map("use_cases")
   downloads Download[]
+  preview   String?
 
   tagIds String[] @map("tag_ids")
 }
