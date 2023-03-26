@@ -15,8 +15,8 @@ model User {
   userId   String @id @map("user_id")
 
   createdAt DateTime @map("created_at")
-  bookmarks String
-  recent    String
+  bookmarks String[]
+  recent    String[]
 
   sessions Session[]
 }
@@ -52,9 +52,9 @@ model Footage {
   id   String @id @default(uuid())
   type String
 
-  useCases  String     @map("use_cases")
   downloads Download[]
   preview   String?
 
-  tagIds String @map("tag_ids")
+  useCases String[] @map("use_cases")
+  tagIds   String[] @map("tag_ids")
 }

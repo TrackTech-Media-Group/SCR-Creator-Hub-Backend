@@ -14,9 +14,7 @@ export default class extends ApiRoute {
 		const type = typeof _type === "string" && ["image", "video"].includes(_type) ? _type : "image";
 		const page = isNaN(Number(_page)) ? 0 : Number(_page);
 
-		let footage = this.server.data.footage
-			.filter((f) => f.type === type)
-			.map((footage) => ({ ...footage, useCases: footage.useCases.split(","), tagIds: footage.tagIds.split(",") }));
+		let footage = this.server.data.footage.filter((f) => f.type === type);
 		if (searchQ.length) {
 			const search = new Fuse(footage, {
 				keys: ["name", "useCases", "tagIds"],

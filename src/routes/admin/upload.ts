@@ -108,7 +108,7 @@ export default class extends ApiRoute {
 			});
 
 			await rm(file.path);
-			items.push({ name: file.originalname, url: req.data.url, ext: file.originalname.split(".").reverse()[0] });
+			items.push({ name: file.originalname, url: req.data.url.replace("http://", "https://"), ext: file.originalname.split(".").reverse()[0] });
 		}
 
 		return items;

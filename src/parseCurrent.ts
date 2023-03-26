@@ -1,7 +1,7 @@
 import { PrismaClient } from "@prisma/client";
 import { config } from "dotenv";
 import { join } from "path";
-import { writeFile } from "node:fs/promises";
+import { readFile } from "node:fs/promises";
 config({ path: join(process.cwd(), "data", ".env") });
 
 // void (async () => {
@@ -61,16 +61,33 @@ config({ path: join(process.cwd(), "data", ".env") });
 // 	}
 // })();
 
+// void (async () => {
+// 	const prisma = new PrismaClient();
+// 	await prisma.$connect();
+
+// 	const footage = await prisma.footage.findMany({ select: { tagIds: true, useCases: true, id: true } });
+// 	const parsedFootage = footage.map((item) => ({
+// 		...item,
+// 		tagIds: item.tagIds.replace("}", "").replace("{", "").replaceAll('"', "").split(","),
+// 		useCases: item.useCases.replace("}", "").replace("{", "").replaceAll('"', "").split(",")
+// 	}));
+
+// 	await writeFile(join(process.cwd(), "data", "converted.json"), JSON.stringify(parsedFootage));
+// })();
+
 void (async () => {
 	const prisma = new PrismaClient();
 	await prisma.$connect();
 
-	const footage = await prisma.footage.findMany({ select: { tagIds: true, useCases: true, id: true } });
-	const parsedFootage = footage.map((item) => ({
-		...item,
-		tagIds: item.tagIds.replace("}", "").replace("{", "").replaceAll('"', "").split(","),
-		useCases: item.useCases.replace("}", "").replace("{", "").replaceAll('"', "").split(",")
-	}));
+	const file = await readFile(join(process.cwd(), "data", "converted.json"), "utf-8");
+	const json = JSON.parse(file) as { id: string; tagIds: string[]; useCases: string[] }[];
 
-	await writeFile(join(process.cwd(), "data", "converted.json"), JSON.stringify(parsedFootage));
+	for await (const file of json) {
+		await prisma.footage.update({ where: { id: file.id }, data: { tagIds: file.tagIds, useCases: file.useCases } });
+	}
+
+	const downloads = await prisma.download.findMany();
+	for await (const download of downloads) {
+		await prisma.download.update({ where: { id: download.id }, data: { url: download.url.replace("http://", "https://") } });
+	}
 })();

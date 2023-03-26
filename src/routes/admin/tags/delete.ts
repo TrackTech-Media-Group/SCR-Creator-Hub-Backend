@@ -17,15 +17,12 @@ export default class extends ApiRoute {
 		await this.server.prisma.tag.delete({ where: { id: req.body.id } });
 		this.server.data.tags = this.server.data.tags.filter((t) => t.id !== tag.id);
 
-		const hasTag = await this.server.prisma.footage.findMany({ where: { tagIds: { contains: req.body.id } } });
+		const hasTag = await this.server.prisma.footage.findMany({ where: { tagIds: { has: req.body.id } } });
 		for await (const footage of hasTag) {
 			await this.server.prisma.footage.update({
 				where: { id: footage.id },
 				data: {
-					tagIds: footage.tagIds
-						.split(",")
-						.filter((t) => t !== tag.id)
-						.join(",")
+					tagIds: footage.tagIds.filter((t) => t !== tag.id)
 				}
 			});
 		}

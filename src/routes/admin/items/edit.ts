@@ -82,8 +82,7 @@ export default class extends ApiRoute {
 				data: {
 					name,
 					type,
-					useCases: useCases.join(","),
-					tagIds: foundTags.map((t) => t.id).join(","),
+					tagIds: foundTags.map((t) => t.id),
 					downloads: {
 						create: correctDownloads.map((d) => {
 							const foundDownload = downloads.find((v) => v.name === d.name)!;
@@ -134,7 +133,7 @@ export default class extends ApiRoute {
 			});
 
 			await rm(file.path);
-			items.push({ name: file.originalname, url: req.data.url, ext: file.originalname.split(".").reverse()[0] });
+			items.push({ name: file.originalname, url: req.data.url.replace("http://", "https://"), ext: file.originalname.split(".").reverse()[0] });
 		}
 
 		return items;

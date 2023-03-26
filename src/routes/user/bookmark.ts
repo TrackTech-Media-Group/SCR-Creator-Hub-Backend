@@ -23,14 +23,14 @@ export default class extends ApiRoute {
 		}
 
 		if (req.locals.user.bookmarks.includes(id)) {
-			const bookmarks = req.locals.user.bookmarks.split(",").filter((b) => b !== id);
+			const bookmarks = req.locals.user.bookmarks.filter((b) => b !== id);
 			await this.server.prisma.user.update({
 				where: { userId: req.locals.user.userId },
-				data: { bookmarks: bookmarks.join(",") }
+				data: { bookmarks }
 			});
 
 			const cacheUser = this.server.data.users.get(req.locals.user.userId)!;
-			const user = { ...req.locals.user, bookmarks: bookmarks.join(","), sessions: cacheUser.sessions };
+			const user = { ...req.locals.user, bookmarks, sessions: cacheUser.sessions };
 			this.server.data.users.set(user.userId, user);
 
 			const token = this.server.jwt.generateCsrfToken();
@@ -50,10 +50,10 @@ export default class extends ApiRoute {
 		const cacheUser = this.server.data.users.get(req.locals.user.userId)!;
 		await this.server.prisma.user.update({
 			where: { userId: req.locals.user.userId },
-			data: { bookmarks: [...cacheUser.bookmarks, id].join(",") }
+			data: { bookmarks: [...cacheUser.bookmarks, id] }
 		});
 
-		const user = { ...req.locals.user, bookmarks: [...cacheUser.bookmarks, id].join(","), sessions: cacheUser.sessions };
+		const user = { ...req.locals.user, bookmarks: [...cacheUser.bookmarks, id], sessions: cacheUser.sessions };
 		this.server.data.users.set(user.userId, user);
 
 		const token = this.server.jwt.generateCsrfToken();

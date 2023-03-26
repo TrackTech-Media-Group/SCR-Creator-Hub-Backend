@@ -25,7 +25,6 @@ export default class extends ApiRoute {
 			...footage,
 			preview,
 			marked,
-			useCases: footage.useCases.split(","),
 			tags: tags.filter((t) => footage.tagIds.includes(t.id)),
 			downloads: footage.downloads.map((download) => ({ name: download.name, url: download.url }))
 		});

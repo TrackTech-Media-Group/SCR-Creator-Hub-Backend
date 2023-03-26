@@ -22,7 +22,7 @@ export class UserCache {
 				refreshDate,
 				expirationDate,
 				User: {
-					connectOrCreate: { where: { userId: id }, create: { createdAt: new Date(), userId: id, username, bookmarks: "", recent: "" } }
+					connectOrCreate: { where: { userId: id }, create: { createdAt: new Date(), userId: id, username } }
 				}
 			}
 		});
@@ -62,14 +62,8 @@ export class UserCache {
 			const req = this.userManager.server.prisma.user.update({
 				where: { userId: user.userId },
 				data: {
-					bookmarks: user.bookmarks
-						.split(",")
-						.filter((b) => b !== footageId)
-						.join(","),
-					recent: user.recent
-						.split(",")
-						.filter((r) => r !== footageId)
-						.join(",")
+					bookmarks: user.bookmarks.filter((b) => b !== footageId).join(","),
+					recent: user.recent.filter((r) => r !== footageId).join(",")
 				}
 			});
 
