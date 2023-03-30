@@ -2,8 +2,7 @@ import axios from "axios";
 import type { Request, Response } from "express";
 import Ffmpeg from "fluent-ffmpeg";
 import FormData from "form-data";
-import { rm, writeFile } from "node:fs/promises";
-import { PassThrough } from "node:stream";
+import { rm, writeFile, readFile } from "node:fs/promises";
 import { join } from "node:path";
 import { ApiRoute, ApplyOptions } from "../../lib/Api/index.js";
 
@@ -78,31 +77,15 @@ export default class extends ApiRoute {
 
 		const { data: video } = await axios.get<Buffer>(videoUrl, { responseType: "arraybuffer" });
 		const savePathVideo = join(process.cwd(), "temp", name);
+		const savePathScreenshot = join(process.cwd(), "temp", `${name.split(".")[0]}.png`);
 		await writeFile(savePathVideo, video);
 
-		const stream = new PassThrough();
 		const ffmpeg = Ffmpeg(savePathVideo);
-		await new Promise((res, rej) =>
-			ffmpeg
-				.takeScreenshots({ count: 1, timestamps: ["1"] })
-				.on("end", res)
-				.on("error", rej)
-				.writeToStream(stream)
-		);
+		await new Promise((res) => ffmpeg.screenshot(1).on("end", res).on("error", res).output(savePathScreenshot).run());
 
-		const outputBuffer = await new Promise((res) => {
-			const buffers: Buffer[] = [];
-			stream.on("data", (buf) => {
-				buffers.push(buf);
-			});
-			stream.on("end", () => {
-				const outputBuffer = Buffer.concat(buffers);
-				res(outputBuffer);
-			});
-		});
-
+		const screenshot = await readFile(savePathScreenshot);
 		const form = new FormData();
-		form.append("upload", outputBuffer, `preview.png`);
+		form.append("upload", screenshot, `preview.png`);
 
 		const req = await axios<{ url: string }>(`${process.env.UPLOAD_API}/api/upload`, {
 			data: form,
