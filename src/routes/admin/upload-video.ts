@@ -30,8 +30,8 @@ export default class extends ApiRoute {
 				data: {
 					name,
 					type,
-					useCases: useCases.join(","),
-					tagIds: foundTags.map((t) => t.id).join(","),
+					useCases,
+					tagIds: foundTags.map((t) => t.id),
 					preview: thumbnail,
 					downloads: {
 						create: download
@@ -86,6 +86,7 @@ export default class extends ApiRoute {
 
 		const screenshot = await readFile(savePathScreenshot);
 		const optimiser = sharp(screenshot, { sequentialRead: true });
+		optimiser.rotate();
 		optimiser.png({ quality: 12 });
 
 		const form = new FormData();

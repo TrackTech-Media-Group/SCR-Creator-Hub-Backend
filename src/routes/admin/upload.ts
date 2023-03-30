@@ -57,8 +57,8 @@ export default class extends ApiRoute {
 				data: {
 					name,
 					type,
-					useCases: useCases.join(","),
-					tagIds: foundTags.map((t) => t.id).join(","),
+					useCases,
+					tagIds: foundTags.map((t) => t.id),
 					preview: previewUpload,
 					downloads: {
 						create: correctDownloads.map((d) => {
