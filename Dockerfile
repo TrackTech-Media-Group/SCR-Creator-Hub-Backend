@@ -14,6 +14,8 @@ RUN yarn run prisma generate
 RUN yarn build
 
 FROM node:19-alpine as runner
+RUN apk add --no-cache ffmpeg
+
 WORKDIR /creatorhub
 
 # Create user PaperPlane
