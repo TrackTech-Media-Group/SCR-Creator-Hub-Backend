@@ -1,8 +1,8 @@
 import { PrismaClient } from "@prisma/client";
 import { config } from "dotenv";
 import { join } from "path";
-import { writeFile, readFile } from "node:fs/promises";
-import { createWriteStream } from "node:fs";
+import { writeFile } from "node:fs/promises";
+import { PassThrough } from "node:stream";
 import axios from "axios";
 import Ffmpeg from "fluent-ffmpeg";
 import FormData from "form-data";
@@ -113,10 +113,10 @@ void (async () => {
 
 			console.log(`Saving video...`);
 			const savePathVideo = join(process.cwd(), "temp", item.downloads[0].url.split("/").reverse()[0]);
-			const savePathScreenshot = join(process.cwd(), "temp", `${item.id}.png`);
+			// const savePathScreenshot = join(process.cwd(), "temp", `${item.id}.png`);
 			await writeFile(savePathVideo, video);
 
-			const stream = createWriteStream(savePathScreenshot);
+			const stream = new PassThrough();
 
 			console.log(`Creating thumbnail...`);
 			const ffmpeg = Ffmpeg(savePathVideo);
@@ -128,10 +128,21 @@ void (async () => {
 					.pipe(stream)
 			);
 
+			const outputBuffer = await new Promise((res) => {
+				const buffers: Buffer[] = [];
+				stream.on("data", (buf) => {
+					buffers.push(buf);
+				});
+				stream.on("end", () => {
+					const outputBuffer = Buffer.concat(buffers);
+					res(outputBuffer);
+				});
+			});
+
 			console.log(`Uploading thumbnail...`);
-			const screenshot = await readFile(savePathScreenshot);
+			// const screenshot = await readFile(savePathScreenshot);
 			const form = new FormData();
-			form.append("upload", screenshot, `preview.png`);
+			form.append("upload", outputBuffer, `preview.png`);
 
 			const req = await axios<{ url: string }>(`${process.env.UPLOAD_API}/api/upload`, {
 				data: form,
