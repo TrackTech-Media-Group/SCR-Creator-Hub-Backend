@@ -87,7 +87,6 @@ export default class extends ApiRoute {
 		await new Promise((res, rej) =>
 			ffmpeg
 				.takeScreenshots({ count: 1, timestamps: ["1"] })
-				.output(savePathScreenshot)
 				.on("end", res)
 				.on("error", rej)
 				.pipe(stream)
