@@ -4,6 +4,7 @@ import Ffmpeg from "fluent-ffmpeg";
 import FormData from "form-data";
 import { rm, writeFile, readFile } from "node:fs/promises";
 import { join } from "node:path";
+import sharp from "sharp";
 import { ApiRoute, ApplyOptions } from "../../lib/Api/index.js";
 
 @ApplyOptions({
@@ -81,9 +82,12 @@ export default class extends ApiRoute {
 		await writeFile(savePathVideo, video);
 
 		const ffmpeg = Ffmpeg(savePathVideo);
-		await new Promise((res) => ffmpeg.screenshot(1).on("end", res).on("error", res).output(savePathScreenshot).run());
+		await new Promise((res) => ffmpeg.screenshot({ count: 1 }).on("end", res).on("error", res).output(savePathScreenshot).run());
 
 		const screenshot = await readFile(savePathScreenshot);
+		const optimiser = sharp(screenshot, { sequentialRead: true });
+		optimiser.png({ quality: 12 });
+
 		const form = new FormData();
 		form.append("upload", screenshot, `preview.png`);
 
