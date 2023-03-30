@@ -2,6 +2,7 @@ import { PrismaClient } from "@prisma/client";
 import { config } from "dotenv";
 import { join } from "path";
 import { writeFile, readFile } from "node:fs/promises";
+import { createWriteStream } from "node:fs";
 import axios from "axios";
 import Ffmpeg from "fluent-ffmpeg";
 import FormData from "form-data";
@@ -115,15 +116,16 @@ void (async () => {
 			const savePathScreenshot = join(process.cwd(), "temp", `${item.id}.png`);
 			await writeFile(savePathVideo, video);
 
+			const stream = createWriteStream(savePathScreenshot);
+
 			console.log(`Creating thumbnail...`);
 			const ffmpeg = Ffmpeg(savePathVideo);
 			await new Promise((res, rej) =>
 				ffmpeg
 					.takeScreenshots({ count: 1, timestamps: ["1"] })
-					.output(savePathScreenshot)
-					.on("end", rej)
+					.on("end", res)
 					.on("error", rej)
-					.run()
+					.pipe(stream)
 			);
 
 			console.log(`Uploading thumbnail...`);

@@ -3,6 +3,7 @@ import type { Request, Response } from "express";
 import Ffmpeg from "fluent-ffmpeg";
 import FormData from "form-data";
 import { rm, writeFile, readFile } from "node:fs/promises";
+import { createWriteStream } from "node:fs";
 import { join } from "node:path";
 import { ApiRoute, ApplyOptions } from "../../lib/Api/index.js";
 
@@ -80,14 +81,16 @@ export default class extends ApiRoute {
 		const savePathScreenshot = join(process.cwd(), "temp", `${name.split(".")[0]}.png`);
 		await writeFile(savePathVideo, video);
 
+		const stream = createWriteStream(savePathScreenshot);
+
 		const ffmpeg = Ffmpeg(savePathVideo);
 		await new Promise((res, rej) =>
 			ffmpeg
 				.takeScreenshots({ count: 1, timestamps: ["1"] })
 				.output(savePathScreenshot)
-				.on("end", rej)
+				.on("end", res)
 				.on("error", rej)
-				.run()
+				.pipe(stream)
 		);
 
 		const screenshot = await readFile(savePathScreenshot);
