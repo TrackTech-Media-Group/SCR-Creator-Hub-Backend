@@ -44,7 +44,7 @@ export class UserCache {
 
 		const newUser = await this.userManager.server.prisma.user.update({
 			where: { userId },
-			data: { recent: [footageId, ...(user.recent ?? [])].slice(0, 100).join(",") },
+			data: { recent: [footageId, ...(user.recent ?? [])].slice(0, 100) },
 			include: { sessions: true }
 		});
 		this.userManager.server.data.users.set(newUser.userId, newUser);
