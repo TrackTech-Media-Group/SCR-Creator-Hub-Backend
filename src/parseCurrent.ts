@@ -119,7 +119,8 @@ void (async () => {
 			const ffmpeg = Ffmpeg(savePathVideo);
 			await new Promise((res, rej) =>
 				ffmpeg
-					.takeScreenshots({ count: 1, timestamps: ["1"] }, savePathScreenshot)
+					.takeScreenshots({ count: 1, timestamps: ["1"] })
+					.output(savePathScreenshot)
 					.on("end", rej)
 					.on("error", rej)
 					.run()
