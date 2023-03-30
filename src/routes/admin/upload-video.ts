@@ -1,5 +1,8 @@
+import axios from "axios";
 import type { Request, Response } from "express";
-import { rm } from "node:fs/promises";
+import Ffmpeg from "fluent-ffmpeg";
+import FormData from "form-data";
+import { rm, writeFile, readFile } from "node:fs/promises";
 import { join } from "node:path";
 import { ApiRoute, ApplyOptions } from "../../lib/Api/index.js";
 
@@ -20,6 +23,7 @@ export default class extends ApiRoute {
 			return this.badReq(req, res, "Invalid download provided");
 
 		try {
+			const thumbnail = await this.createThumbnail(download.url);
 			const foundTags = await this.server.prisma.tag.findMany({ where: { id: { in: tags } } });
 			const footage = await this.server.prisma.footage.create({
 				data: {
@@ -27,7 +31,7 @@ export default class extends ApiRoute {
 					type,
 					useCases: useCases.join(","),
 					tagIds: foundTags.map((t) => t.id).join(","),
-					preview: undefined,
+					preview: thumbnail,
 					downloads: {
 						create: download
 					}
@@ -66,6 +70,36 @@ export default class extends ApiRoute {
 		res.cookie("XSRF-TOKEN", token.token, { domain: process.env.NODE_ENV === "development" ? undefined : `.${domain}.${ext}` })
 			.status(400)
 			.send({ message });
+	}
+
+	private async createThumbnail(videoUrl: string) {
+		const name = videoUrl.split("/").reverse()[0];
+
+		const { data: video } = await axios.get<Buffer>(videoUrl, { responseType: "arraybuffer" });
+		const savePathVideo = join(process.cwd(), "temp", name);
+		const savePathScreenshot = join(process.cwd(), "temp", `${name.split(".")[0]}.png`);
+		await writeFile(savePathVideo, video);
+
+		const ffmpeg = Ffmpeg(savePathVideo);
+		await new Promise((res, rej) =>
+			ffmpeg
+				.takeScreenshots({ count: 1, timestamps: ["1"] }, savePathScreenshot)
+				.on("end", rej)
+				.on("error", rej)
+				.run()
+		);
+
+		const screenshot = await readFile(savePathScreenshot);
+		const form = new FormData();
+		form.append("upload", screenshot, `preview.png`);
+
+		const req = await axios<{ url: string }>(`${process.env.UPLOAD_API}/api/upload`, {
+			data: form,
+			method: "POST",
+			headers: { Authorization: process.env.UPLOAD_API_KEY, "Content-Type": "multipart/form-data" }
+		});
+
+		return req.data.url.replace("http://", "https://");
 	}
 }
 
