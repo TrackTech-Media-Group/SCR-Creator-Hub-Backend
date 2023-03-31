@@ -9,13 +9,9 @@ import _ from "lodash";
 export default class extends ApiRoute {
 	public override run(req: Request, res: Response) {
 		const { footage } = this.server.data;
-		function* getRandomItem() {
-			for (let i = 0; i < 20; i++) {
-				yield footage[Math.floor(Math.random() * footage.length)];
-			}
-		}
+		const startIndex = Math.max(0, Math.floor(Math.random() * footage.length) - 20);
+		const randomItems = footage.slice(startIndex, startIndex + 20);
 
-		const randomItems = [...getRandomItem()].filter(Boolean);
 		res.send(
 			randomItems.map((footage) => ({
 				name: footage.name,
