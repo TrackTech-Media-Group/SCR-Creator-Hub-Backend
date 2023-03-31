@@ -9,12 +9,17 @@ import _ from "lodash";
 })
 export default class extends ApiRoute {
 	public override run(req: Request, res: Response) {
-		const { query: _search, tag: _tag, page: _page } = req.query;
+		const { query: _search, tag: _tag, page: _page, type: __type } = req.query;
 		const searchQ = typeof _search === "string" ? _search : "";
 		const tag = typeof _tag === "string" ? _tag : "";
 		const page = isNaN(Number(_page)) ? 0 : Number(_page);
 
-		let footage = this.server.data.footage.filter((f) => (tag.length ? f.tagIds.includes(tag) : true));
+		const _type = typeof __type === "string" ? __type : "";
+		const type = ["image", "video", "both"].includes(_type) ? _type : "both";
+
+		let footage = this.server.data.footage
+			.filter((f) => (tag.length ? f.tagIds.includes(tag) : true))
+			.filter((f) => (type === "both" ? true : f.type === type));
 		if (searchQ.length) {
 			const search = new Fuse(footage, {
 				keys: ["name", "useCases", "tagIds"],
