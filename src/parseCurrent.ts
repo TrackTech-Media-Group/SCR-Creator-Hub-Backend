@@ -1,10 +1,9 @@
 import { PrismaClient } from "@prisma/client";
 import { config } from "dotenv";
 import { join } from "path";
-import { writeFile, readFile } from "node:fs/promises";
 import axios from "axios";
-import Ffmpeg from "fluent-ffmpeg";
 import FormData from "form-data";
+import sharp from "sharp";
 config({ path: join(process.cwd(), "data", ".env") });
 
 // void (async () => {
@@ -95,34 +94,78 @@ config({ path: join(process.cwd(), "data", ".env") });
 // 	}
 // })();
 
+// void (async () => {
+// 	const prisma = new PrismaClient();
+// 	await prisma.$connect();
+
+// 	const footageRaw = await prisma.footage.findMany({ include: { downloads: true } });
+// 	const footage = footageRaw.filter((f) => !f.preview?.length && f.type === "video");
+
+// 	for await (const item of footage) {
+// 		console.log(`Running for ${item.name} (${footage.indexOf(item) + 1}/${footage.length})`);
+// 		const download = item.downloads.find((d) => d.name.includes("HD")) || item.downloads[0];
+
+// 		try {
+// 			console.log(`Downloading the video...`);
+// 			const { data: video } = await axios.get<Buffer>(download.url, { responseType: "arraybuffer" });
+
+// 			console.log(`Saving video...`);
+// 			const savePathVideo = join(process.cwd(), "temp", item.downloads[0].url.split("/").reverse()[0]);
+// 			const savePathScreenshot = join(process.cwd(), "temp", `${item.id}.png`);
+// 			await writeFile(savePathVideo, video);
+
+// 			console.log(`Creating thumbnail...`);
+// 			const ffmpeg = Ffmpeg(savePathVideo);
+// 			await new Promise((res) => ffmpeg.screenshot(1).on("end", res).on("error", res).output(savePathScreenshot).run());
+
+// 			console.log(`Uploading thumbnail...`);
+// 			const screenshot = await readFile(savePathScreenshot);
+// 			const form = new FormData();
+// 			form.append("upload", screenshot, `preview.png`);
+
+// 			const req = await axios<{ url: string }>(`${process.env.UPLOAD_API}/api/upload`, {
+// 				data: form,
+// 				method: "POST",
+// 				headers: { Authorization: process.env.UPLOAD_API_KEY, "Content-Type": "multipart/form-data" }
+// 			});
+
+// 			console.log(`Upload completed, editing config...`);
+// 			await prisma.footage.update({ where: { id: item.id }, data: { preview: req.data.url.replace("http://", "https://") } });
+// 			console.log(`Continuing with next item`);
+// 		} catch (err) {
+// 			console.error(err);
+// 			console.log(`Failed to optimise ${item.name} (${footage.indexOf(item) + 1}/${footage.length})`);
+// 		}
+// 	}
+// })();
+
 void (async () => {
 	const prisma = new PrismaClient();
 	await prisma.$connect();
 
 	const footageRaw = await prisma.footage.findMany({ include: { downloads: true } });
-	const footage = footageRaw.filter((f) => !f.preview?.length && f.type === "video");
+	const footage = footageRaw.filter((f) => f.preview && f.type === "video");
 
 	for await (const item of footage) {
 		console.log(`Running for ${item.name} (${footage.indexOf(item) + 1}/${footage.length})`);
-		const download = item.downloads.find((d) => d.name.includes("HD")) || item.downloads[0];
+		const download = item.preview;
 
 		try {
-			console.log(`Downloading the video...`);
-			const { data: video } = await axios.get<Buffer>(download.url, { responseType: "arraybuffer" });
+			console.log(`Downloading the preview...`);
+			const { data: preview } = await axios.get<Buffer>(download!, { responseType: "arraybuffer" });
 
-			console.log(`Saving video...`);
-			const savePathVideo = join(process.cwd(), "temp", item.downloads[0].url.split("/").reverse()[0]);
-			const savePathScreenshot = join(process.cwd(), "temp", `${item.id}.png`);
-			await writeFile(savePathVideo, video);
+			console.log(`Creating optimised thumbnail...`);
+			const transformer = sharp(preview, { sequentialRead: true });
+			transformer.rotate();
+			transformer.png({ quality: 12 });
+			transformer.resize(320, 180);
 
-			console.log(`Creating thumbnail...`);
-			const ffmpeg = Ffmpeg(savePathVideo);
-			await new Promise((res) => ffmpeg.screenshot(1).on("end", res).on("error", res).output(savePathScreenshot).run());
+			const optBuffer = await transformer.toBuffer();
+			console.log(`Optimising complete, uploading...`);
 
 			console.log(`Uploading thumbnail...`);
-			const screenshot = await readFile(savePathScreenshot);
 			const form = new FormData();
-			form.append("upload", screenshot, `preview.png`);
+			form.append("upload", optBuffer, `preview.png`);
 
 			const req = await axios<{ url: string }>(`${process.env.UPLOAD_API}/api/upload`, {
 				data: form,
