@@ -89,8 +89,10 @@ export default class extends ApiRoute {
 		optimiser.rotate();
 		optimiser.png({ quality: 12 });
 
+		const buffer = await optimiser.toBuffer();
+
 		const form = new FormData();
-		form.append("upload", screenshot, `preview.png`);
+		form.append("upload", buffer, `preview.png`);
 
 		const req = await axios<{ url: string }>(`${process.env.UPLOAD_API}/api/upload`, {
 			data: form,
