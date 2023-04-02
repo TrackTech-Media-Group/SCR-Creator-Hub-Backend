@@ -9,8 +9,8 @@ import _ from "lodash";
 export default class extends ApiRoute {
 	public override run(req: Request, res: Response) {
 		const { footage } = this.server.data;
-		const startIndex = Math.max(0, Math.floor(Math.random() * footage.length) - 20);
-		const randomItems = footage.slice(startIndex, startIndex + 20);
+		const startIndex = Math.max(0, Math.floor(Math.random() * footage.length) - 12);
+		const randomItems = footage.slice(startIndex, startIndex + 12);
 
 		res.send(
 			randomItems.map((footage) => ({

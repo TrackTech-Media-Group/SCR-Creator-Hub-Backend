@@ -16,8 +16,8 @@ export default class extends ApiRoute {
 		const page = isNaN(Number(_page)) ? 0 : Number(_page);
 		if (preview) {
 			const data = this.server.data.footage.filter((f) => f.tagIds.includes(tag) && f.type === type);
-			const startIndex = Math.max(0, Math.floor(Math.random() * data.length) - 20);
-			const randomItems = data.slice(startIndex, startIndex + 20);
+			const startIndex = Math.max(0, Math.floor(Math.random() * data.length) - 12);
+			const randomItems = data.slice(startIndex, startIndex + 12);
 
 			res.send(
 				randomItems.map((footage) => ({
