@@ -492,13 +492,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@snowcrystals/icicle@npm:^1.0.4":
-  version: 1.0.4
-  resolution: "@snowcrystals/icicle@npm:1.0.4"
+"@snowcrystals/icicle@npm:^2.0.2":
+  version: 2.0.2
+  resolution: "@snowcrystals/icicle@npm:2.0.2"
   dependencies:
     "@sapphire/timestamp": ^1.0.1
     colorette: ^2.0.20
-  checksum: 3ccc0b6cf8cf1870f1cac3a2cb69d3aa0ff6148f94f2406e544ec902a83a9138e7851e8d80853634a05e77b9b07f5d02211864896046b29ed6d8a4c4e9231c28
+  checksum: a004e32cf66f281f5881ca11ce020346f8cefafb3b4267ce7d94d33fba81a863f9c569389d06fd88010a3fe45c67bc859902c6bbb881486df941817737c08560
   languageName: node
   linkType: hard
 
@@ -5137,7 +5137,7 @@ __metadata:
     "@sapphire/eslint-config": ^4.4.2
     "@sapphire/prettier-config": ^1.4.5
     "@sapphire/ts-config": ^3.3.4
-    "@snowcrystals/icicle": ^1.0.4
+    "@snowcrystals/icicle": ^2.0.2
     "@types/busboy": ^1.5.0
     "@types/cookie-parser": ^1.4.3
     "@types/cors": ^2.8.13
