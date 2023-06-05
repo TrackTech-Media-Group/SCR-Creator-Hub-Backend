@@ -288,5 +288,6 @@ declare module "fuse.js" {
 
 	export const config: Required<IFuseOptions<any>>;
 
+	// @ts-expect-error typescript can only export at top level error
 	export as namespace Fuse;
 }
