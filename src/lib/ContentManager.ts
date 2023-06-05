@@ -29,7 +29,7 @@ export class ContentManager {
 	}
 
 	/** Loads all the data from the PostgreSQL database -> exists with code 1 if the process fails */
-	@MeasurePerformance()
+	@MeasurePerformance({ async: true })
 	public async load() {
 		const tags = await this.getAllTags();
 		const content = await this.getAllContent();
@@ -50,6 +50,18 @@ export class ContentManager {
 		}
 
 		this.logger.info(`Initiation complete.`);
+	}
+
+	/**
+	 * Returns a random list of x amount of content
+	 * @param amount The amount of items you want to get
+	 */
+	@MeasurePerformance()
+	public getRandomContent(amount: number) {
+		const startIndex = Math.max(0, Math.floor(Math.random() * this.content.size) - amount);
+		const randomItems = [...this.content.values()].slice(startIndex, startIndex + amount);
+
+		return randomItems;
 	}
 
 	/** Returns the list of available tags -> exits with code 1 if the process fails */
