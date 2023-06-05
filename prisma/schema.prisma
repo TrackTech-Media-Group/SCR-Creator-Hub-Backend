@@ -25,10 +25,6 @@ model Session {
   token          String   @id
   expirationDate DateTime @map("expiration_date")
 
-  accessToken  String   @map("access_token")
-  refreshToken String   @map("refresh_token")
-  refreshDate  DateTime @map("refresh_date")
-
   User   User?   @relation(fields: [userId], references: [userId])
   userId String?
 }
