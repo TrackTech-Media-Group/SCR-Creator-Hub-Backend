@@ -1,22 +1,28 @@
-import type { Request, Response, NextFunction } from "express";
-import { ApplyMiddlewareOptions } from "../lib/Middleware/decorators.js";
-import { Middleware } from "../lib/Middleware/Middleware.js";
+import type { CreatorHubServer } from "#lib/Server.js";
+import { ApiError } from "#errors/ApiError.js";
+import { ApplyOptions, Middleware, methods } from "@snowcrystals/highway";
+import { HttpStatusCode } from "axios";
+import type { NextFunction, Request, Response } from "express";
 
-@ApplyMiddlewareOptions({
-	name: "internal-api"
-})
-export default class extends Middleware {
-	public override run(req: Request, res: Response, next: NextFunction): void {
+@ApplyOptions<Middleware.Options>({ id: "internal-api" })
+export default class extends Middleware<CreatorHubServer> {
+	public [methods.GET](req: Request, res: Response, next: NextFunction) {
+		return this.run(req, res, next);
+	}
+
+	private run(req: Request, res: Response, next: NextFunction) {
+		if (process.env.NODE_ENV === "development") return next();
+
 		const { authorization } = req.headers;
 		if (typeof authorization !== "string") {
-			res.status(401).send({ message: "Unauthorized." });
-			return;
+			const error = new ApiError(HttpStatusCode.Unauthorized, { Authorization: "Missing appropiate authorization header" });
+			return next(error);
 		}
 
 		const [type, token] = authorization.split(/ +/g);
-		if (type !== "Bearer" || token !== this.server.config.config.internalApiKey) {
-			res.status(401).send({ message: "Unauthorized." });
-			return;
+		if (type !== "Bearer" || token !== process.env.INTERNAL_API_KEY) {
+			const error = new ApiError(HttpStatusCode.Unauthorized, { Authorization: "Incorrect header value (scope or key)" });
+			return next(error);
 		}
 
 		next();

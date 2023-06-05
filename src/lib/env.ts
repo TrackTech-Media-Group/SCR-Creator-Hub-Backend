@@ -10,7 +10,9 @@ const logger = new Logger();
 const envSchema = z.object({
 	// REQUIRED ENVIRONMENT VARIABLES
 	DATABASE_URL: z.string().url(),
-	PORT: z.string().max(4)
+	PORT: z.string().max(4),
+	NODE_ENV: z.string(),
+	INTERNAL_API_KEY: z.string()
 });
 
 try {

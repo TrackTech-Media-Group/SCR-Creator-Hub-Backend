@@ -8,7 +8,8 @@
 	"main": "dist/index.js",
 	"imports": {
 		"#structures/*": "./dist/lib/structures/*",
-		"#lib/*": "./dist/lib/*"
+		"#lib/*": "./dist/lib/*",
+		"#errors/*": "./dist/lib/errors/*"
 	},
 	"scripts": {
 		"build": "tsc --build",

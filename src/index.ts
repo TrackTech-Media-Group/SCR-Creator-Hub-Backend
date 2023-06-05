@@ -7,6 +7,6 @@ import { fileURLToPath } from "node:url";
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
 void (async () => {
-	const server = new CreatorHubServer({ middlewarePath: "", routePath: join(__dirname, "routes") });
+	const server = new CreatorHubServer({ middlewarePath: join(__dirname, "middleware"), routePath: join(__dirname, "routes") });
 	await server.start();
 })();

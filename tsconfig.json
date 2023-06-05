@@ -8,7 +8,8 @@
 		"moduleResolution": "NodeNext",
 		"paths": {
 			"#structures/*": ["./src/lib/structures/*"],
-			"#lib/*": ["./src/lib/*"]
+			"#lib/*": ["./src/lib/*"],
+			"#errors/*": ["./src/lib/errors/*"]
 		}
 	},
 	"exclude": ["node_modules"],
