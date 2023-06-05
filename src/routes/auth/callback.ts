@@ -1,7 +1,7 @@
 import { bold } from "colorette";
 import type { Request, Response } from "express";
 import { ApiRoute, ApplyOptions } from "../../lib/Api/index.js";
-import { Oauth2, DiscordApiError } from "../../lib/discord/index.js";
+import { Oauth2, type DiscordApiError } from "../../lib/discord/index.js";
 
 @ApplyOptions({
 	methods: "POST"
