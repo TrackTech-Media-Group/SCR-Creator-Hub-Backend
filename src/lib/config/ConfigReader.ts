@@ -4,7 +4,7 @@ import { config } from "dotenv";
 import { writeFile } from "node:fs/promises";
 import { join } from "node:path";
 import type Server from "../Server.js";
-import { DEFAULT_RAW_ENV, EnvConfig } from "./ConfigTypes.js";
+import { DEFAULT_RAW_ENV, type EnvConfig } from "./ConfigTypes.js";
 
 export class ConfigReader {
 	public dataDirectory = join(process.cwd(), "data");

@@ -1,7 +1,7 @@
 import { PrismaClient } from "@prisma/client";
 import { Logger, LogLevel } from "@snowcrystals/icicle";
 import { bold } from "colorette";
-import express, { Express } from "express";
+import express, { type Express } from "express";
 import { ApiHandler } from "./Api/index.js";
 import Config from "./config/index.js";
 import { Jwt } from "./jwt/Jwt.js";
