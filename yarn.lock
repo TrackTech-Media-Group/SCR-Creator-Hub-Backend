@@ -520,14 +520,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@snowcrystals/highway@npm:^1.0.0":
-  version: 1.0.0
-  resolution: "@snowcrystals/highway@npm:1.0.0"
+"@snowcrystals/highway@npm:1.0.2":
+  version: 1.0.2
+  resolution: "@snowcrystals/highway@npm:1.0.2"
   dependencies:
     "@discordjs/collection": ^1.5.1
     express: ^4.18.2
     glob: ^10.2.6
-  checksum: cc61fbc0144f2e7385705188e203f7d1a192ed4559b11a7e408f0344e779987fbec3c0b3c491b4950196f318159c86b2cecfa3b7a3fbae15b13eab3ff8b003f4
+  checksum: f8491e968d358f66107e60016fcae0d70b6bc6b47bd16ec278e6c95d762422883b7c5f434b4df62177fcd2dd681311fef7f794981f0fbce75d84c4a43227c0ee
   languageName: node
   linkType: hard
 
@@ -1839,7 +1839,7 @@ __metadata:
     "@sapphire/eslint-config": ^4.4.2
     "@sapphire/prettier-config": ^1.4.5
     "@sapphire/ts-config": ^4.0.0
-    "@snowcrystals/highway": ^1.0.0
+    "@snowcrystals/highway": 1.0.2
     "@snowcrystals/icicle": ^2.0.4
     "@types/busboy": ^1.5.0
     "@types/cookie-parser": ^1.4.3

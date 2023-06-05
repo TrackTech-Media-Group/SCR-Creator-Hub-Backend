@@ -15,15 +15,14 @@
 		"build": "tsc --build",
 		"build:watch": "tsc --watch",
 		"start:dev": "NODE_ENV=development nodemon ./dist",
-		"start": "prisma migrate deploy && node ./dist",
+		"start": "NODE_ENV=production prisma migrate deploy && node ./dist",
 		"lint": "eslint src",
-		"postinstall": "is-ci || husky install",
-		"prisma": "yarn dotenv -e ./data/.env -- prisma"
+		"postinstall": "is-ci || husky install"
 	},
 	"dependencies": {
 		"@prisma/client": "4.14.1",
 		"@sapphire/discord-utilities": "^3.0.3",
-		"@snowcrystals/highway": "^1.0.0",
+		"@snowcrystals/highway": "1.0.2",
 		"@snowcrystals/icicle": "^2.0.4",
 		"axios": "^1.4.0",
 		"busboy": "^1.6.0",

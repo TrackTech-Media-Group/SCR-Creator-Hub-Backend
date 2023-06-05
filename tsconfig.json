@@ -6,6 +6,7 @@
 		"useUnknownInCatchVariables": false,
 		"module": "ESNext",
 		"moduleResolution": "NodeNext",
+		"skipLibCheck": true,
 		"paths": {
 			"#structures/*": ["./src/lib/structures/*"],
 			"#lib/*": ["./src/lib/*"],
