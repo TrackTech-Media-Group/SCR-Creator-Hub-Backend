@@ -6,10 +6,13 @@ import { Logger } from "@snowcrystals/icicle";
 import { bold } from "colorette";
 
 const logger = new Logger();
-// List of environment variables which are used by this application
 const envSchema = z.object({
 	// REQUIRED ENVIRONMENT VARIABLES
 	DATABASE_URL: z.string().url(),
+	REDIS_RATELIMIT_CACHE_PORT: z.string(),
+	REDIS_RATELIMIT_CACHE_HOST: z.string(),
+	REDIS_RATELIMIT_CACHE_PASSWORD: z.string(),
+
 	PORT: z.string().max(4),
 	NODE_ENV: z.string(),
 	INTERNAL_API_KEY: z.string()

@@ -1,11 +1,20 @@
 import type { CreatorHubServer } from "#lib/Server.js";
 import { CONTENT_TYPE_FILTER, type ContentTypeFilter } from "#lib/constants.js";
+import { Utils } from "#lib/utils.js";
 import { Route, methods } from "@snowcrystals/highway";
 import type { Request, Response } from "express";
+import { rateLimit } from "express-rate-limit";
 import Fuse from "fuse.js";
 import _ from "lodash";
 
 export default class extends Route<CreatorHubServer> {
+	public constructor() {
+		super();
+
+		const ratelimit = rateLimit(Utils.getRatelimitOptions());
+		this.router.use(ratelimit);
+	}
+
 	public [methods.GET](req: Request, res: Response) {
 		const query = this.cleanQuery(req.query);
 		let content = this.getContent(query.type, query.tag);

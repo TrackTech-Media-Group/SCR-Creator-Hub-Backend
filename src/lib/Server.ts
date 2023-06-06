@@ -19,6 +19,8 @@ export class CreatorHubServer extends Server {
 
 	public async start() {
 		await this.contentManager.load();
+		await this.prisma.$connect();
+
 		await this.listen(3000, () => new Logger({ name: "Server" }).info(`Running on port ${bold(3000)}: http://localhost:${3000}`));
 	}
 
