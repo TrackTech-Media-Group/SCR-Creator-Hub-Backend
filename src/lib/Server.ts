@@ -31,6 +31,9 @@ export class CreatorHubServer extends Server {
 	}
 
 	private handleApiError(error: any, req: Request, res: Response, next: NextFunction) {
+		// Plain call to avoid "un-used" variable ts error -> cannot remove from list due to express error handling requirements
+		next;
+
 		if (error instanceof ApiError) {
 			if (error.status >= 500) {
 				this.logger.error(`${req.method} ${bold(req.path)} => code: ${bold(error.status)} - `, error.errors);
