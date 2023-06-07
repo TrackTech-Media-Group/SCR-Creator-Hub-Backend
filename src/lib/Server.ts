@@ -6,6 +6,8 @@ import { ApiError } from "#errors/ApiError.js";
 import { Logger } from "@snowcrystals/icicle";
 import { HttpStatusCode } from "axios";
 import { bold } from "colorette";
+import cors from "cors";
+import { Utils } from "./utils.js";
 
 export class CreatorHubServer extends Server {
 	/** The manager responsible for all the content on Creator Hub */
@@ -13,6 +15,9 @@ export class CreatorHubServer extends Server {
 
 	/** The bridge between the application and the PostgreSQL database */
 	public readonly prisma = new PrismaClient();
+
+	/** The cors instance handling all Cross-Origin headers */
+	public readonly cors = cors({ credentials: true, origin: Utils.getCorsOrigins() });
 
 	/** Private logger instance for error handling */
 	private logger = new Logger({ name: "Error Handler" });
@@ -25,6 +30,8 @@ export class CreatorHubServer extends Server {
 	}
 
 	public override async listen(port: number, cb?: () => void) {
+		this.express.use(this.cors);
+
 		await this.middlewareHandler.loadAll(this);
 		await this.routeHandler.loadAll(this);
 

@@ -12,6 +12,14 @@ export class Utils {
 	}
 
 	/**
+	 * Returns an array of allowed origins
+	 */
+	public static getCorsOrigins(): string[] {
+		const origins = ["scrcreate.app", "beta.scrcreate.app"];
+		return process.env.NODE_ENV === "development" ? [...origins, "http://localhost:3001"] : origins;
+	}
+
+	/**
 	 * Returns an object with default and (optionally) options from the options param
 	 * @param options Additional options that may be added to the object
 	 */
