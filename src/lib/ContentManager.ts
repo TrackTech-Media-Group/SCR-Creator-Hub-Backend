@@ -49,7 +49,7 @@ export class ContentManager {
 			this.content.set(instance.id, instance);
 		}
 
-		this.logger.info(`Initiation complete.`);
+		this.logger.info("Initiation complete.");
 	}
 
 	/**

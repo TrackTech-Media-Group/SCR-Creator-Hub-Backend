@@ -51,11 +51,18 @@ export class Content implements iFootage {
 		return this.name;
 	}
 
+	public getPreview(): string {
+		if (this.preview) return this.preview;
+
+		const preview = this.downloads.find((download) => download.name.includes("HD"))?.url ?? this.downloads[0].url;
+		return preview ?? "";
+	}
+
 	public toJSON() {
 		return {
 			id: this.id,
 			name: this.name,
-			preview: this.preview,
+			preview: this.getPreview(),
 			tags: this.tags.map((tag) => tag.toJSON()),
 			type: this.type,
 			useCases: this.useCases,
