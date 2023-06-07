@@ -11,7 +11,7 @@ export default class extends Route<CreatorHubServer> {
 	public constructor() {
 		super();
 
-		const ratelimit = rateLimit(Utils.getRatelimitOptions());
+		const ratelimit = rateLimit(Utils.getRatelimitOptions({ windowMs: 5e3, max: 10 }));
 		this.router.use(ratelimit);
 	}
 
