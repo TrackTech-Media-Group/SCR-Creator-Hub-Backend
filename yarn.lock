@@ -576,14 +576,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@snowcrystals/highway@npm:1.0.2":
-  version: 1.0.2
-  resolution: "@snowcrystals/highway@npm:1.0.2"
+"@snowcrystals/highway@npm:1.0.3":
+  version: 1.0.3
+  resolution: "@snowcrystals/highway@npm:1.0.3"
   dependencies:
     "@discordjs/collection": ^1.5.1
     express: ^4.18.2
-    glob: ^10.2.6
-  checksum: f8491e968d358f66107e60016fcae0d70b6bc6b47bd16ec278e6c95d762422883b7c5f434b4df62177fcd2dd681311fef7f794981f0fbce75d84c4a43227c0ee
+    glob: ^10.2.7
+  checksum: fd4ed5dd3e545f95a445bc4dd0a05d5311bdd4dc1777db63314fb6481ba6d95417e95d3c078f046fda4a27083a2c08ef3552db62aeb4e00c32bee93597c1ed32
   languageName: node
   linkType: hard
 
@@ -1902,7 +1902,7 @@ __metadata:
     "@sapphire/eslint-config": ^4.4.2
     "@sapphire/prettier-config": ^1.4.5
     "@sapphire/ts-config": ^4.0.0
-    "@snowcrystals/highway": 1.0.2
+    "@snowcrystals/highway": 1.0.3
     "@snowcrystals/icicle": ^2.0.4
     "@types/busboy": ^1.5.0
     "@types/cookie-parser": ^1.4.3
@@ -2900,9 +2900,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"glob@npm:^10.2.6":
-  version: 10.2.6
-  resolution: "glob@npm:10.2.6"
+"glob@npm:^10.2.7":
+  version: 10.2.7
+  resolution: "glob@npm:10.2.7"
   dependencies:
     foreground-child: ^3.1.0
     jackspeak: ^2.0.3
@@ -2911,7 +2911,7 @@ __metadata:
     path-scurry: ^1.7.0
   bin:
     glob: dist/cjs/src/bin.js
-  checksum: 94c5964bfa9df95207a69a3bd9b07b99ea7b5ba1f36dd73a8914378cee9436a205b9b5bdff58872abc238684ea7f4b4936e932155b8885250818bcc8d5321ddf
+  checksum: 555205a74607d6f8d9874ba888924b305b5ea1abfaa2e9ccb11ac713d040aac7edbf7d8702a2f4a1cd81b2d7666412170ce7ef061d33cddde189dae8c1a1a054
   languageName: node
   linkType: hard
 
