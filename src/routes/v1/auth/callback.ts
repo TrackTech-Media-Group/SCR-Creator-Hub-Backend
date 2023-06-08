@@ -11,7 +11,7 @@ import type { NextFunction, Request, Response } from "express";
 export default class extends Route<CreatorHubServer> {
 	public readonly logger = new Logger({ name: "/v1/callback" });
 
-	@MeasurePerformance({ async: true, name: "Route#Search(Methods.POST)" })
+	@MeasurePerformance({ async: true, name: "Route#Callback(Methods.POST)" })
 	public async [methods.POST](req: Request, res: Response, next: NextFunction) {
 		const { code, state, stateToken } = req.body;
 		try {

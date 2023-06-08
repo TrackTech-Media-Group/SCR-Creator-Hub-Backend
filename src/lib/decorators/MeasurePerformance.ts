@@ -21,7 +21,7 @@ export default function MeasurePerformance({ name, async }: { name?: string; asy
 			const result = await originalMethod.apply(this, args);
 			const end = performance.now();
 
-			const displayName = `${name || this}#${propertyKeyName}()`;
+			const displayName = name || `${this}#${propertyKeyName}()`;
 			logger.debug(`Performance result for ${bold(displayName)}: call took ${bold(end - start)} ms`);
 
 			return result;
