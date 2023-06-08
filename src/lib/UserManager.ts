@@ -27,8 +27,8 @@ export class UserManager {
 		clientId: process.env.DISCORD_CLIENT_ID,
 		clientSecret: process.env.DISCORD_CLIENT_SECRET,
 		redirectUri: process.env.DISCORD_CLIENT_REDIRECT_URL,
-		agent: `CreatorHub (https://scrcreate.app)`
-	} as any);
+		credentials: Buffer.from(`${process.env.DISCORD_CLIENT_ID}:${process.env.DISCORD_CLIENT_SECRET}`).toString("base64")
+	});
 
 	public constructor(server: CreatorHubServer) {
 		this.server = server;
