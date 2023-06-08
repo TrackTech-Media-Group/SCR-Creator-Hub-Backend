@@ -1921,6 +1921,7 @@ __metadata:
     cookie-parser: ^1.4.6
     cors: ^2.8.5
     cron: ^2.3.1
+    discord-oauth2: ^2.11.0
     dotenv: ^16.0.3
     eslint: ^8.41.0
     eslint-config-prettier: ^8.8.0
@@ -2106,6 +2107,13 @@ __metadata:
   version: 0.37.41
   resolution: "discord-api-types@npm:0.37.41"
   checksum: e8a2dd28afefe30e20652aa8eac3e15b596e7274740ea54088b3713c2a22f9bc883138d8501fa4defe3c45e895aa87fc580b0ef110a9c9ab8609c67e870948ed
+  languageName: node
+  linkType: hard
+
+"discord-oauth2@npm:^2.11.0":
+  version: 2.11.0
+  resolution: "discord-oauth2@npm:2.11.0"
+  checksum: 1ed173abe017fb2b84c10e7a0cc1456be0e2268126926809360339ca033a6a897cadcb740be3c3e4bcd750bcdaa9941fc70f65e3f853085f54ef95db42fd10d3
   languageName: node
   linkType: hard
 
