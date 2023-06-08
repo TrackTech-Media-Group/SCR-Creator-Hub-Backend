@@ -15,7 +15,11 @@ const envSchema = z.object({
 
 	PORT: z.string().max(4),
 	NODE_ENV: z.string(),
-	INTERNAL_API_KEY: z.string()
+
+	DISCORD_OAUTH2_URL: z.string().url(),
+
+	INTERNAL_API_KEY: z.string(),
+	INTERNAL_ENCRYPTION_KEY: z.string()
 });
 
 try {
