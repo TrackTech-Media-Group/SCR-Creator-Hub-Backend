@@ -8,6 +8,7 @@ import MeasurePerformance from "./decorators/MeasurePerformance.js";
 import { User } from "#structures/User.js";
 import { Session } from "#structures/Session.js";
 import DiscordOauth2 from "discord-oauth2";
+import { CronJob } from "cron";
 
 export class UserManager {
 	/** A collection of all the registered users */
@@ -21,6 +22,9 @@ export class UserManager {
 
 	/** The logger instance for the Content Manager */
 	public readonly logger = new Logger({ name: "User Manager", level: Utils.getLoggerLevel() });
+
+	/** Cronjob responsible for sweeping expired sessions */
+	public sweeper!: CronJob;
 
 	/** Discord Oauth2 handler */
 	public readonly discordOauth2 = new DiscordOauth2({
@@ -43,6 +47,9 @@ export class UserManager {
 	public async load() {
 		const users = await this.getAllUsers();
 		const sessions = await this.getAllSessions();
+
+		this.sweeper = new CronJob("0 */6 * * *", this.sweepSessions.bind(this));
+		this.sweeper.start();
 
 		this.logger.debug(`Retrieved ${bold(users.length)} users and ${bold(sessions.length)} sessions`);
 
@@ -95,6 +102,20 @@ export class UserManager {
 		return session.sessionCookie;
 	}
 
+	/**
+	 * Destroys an user session
+	 * @param sessionToken The session to destroy
+	 */
+	public async deleteSession(sessionToken: string) {
+		const session = this.sessions.get(sessionToken);
+		if (!session) return;
+
+		session.user.sessions.delete(sessionToken);
+		this.sessions.delete(sessionToken);
+
+		await this.server.prisma.session.delete({ where: { token: sessionToken } });
+	}
+
 	/** Returns the list of available sessions -> exits with code 1 if the process fails */
 	private async getAllSessions() {
 		const onReject = (error: any) => {
@@ -113,5 +134,18 @@ export class UserManager {
 		};
 
 		return new Promise<iUser[]>((res) => this.server.prisma.user.findMany().then(res).catch(onReject));
+	}
+
+	/** Checks and sweeps expired sessions */
+	private async sweepSessions() {
+		const sessions = await this.server.prisma.session.findMany({ where: { expirationDate: { lte: new Date() } } });
+		for await (const session of sessions) {
+			this.sessions.delete(session.token);
+
+			const user = this.users.get(session.userId ?? "");
+			if (user) user.sessions.delete(session.token);
+		}
+
+		await this.server.prisma.session.deleteMany({ where: { token: { in: sessions.map((session) => session.token) } } });
 	}
 }
