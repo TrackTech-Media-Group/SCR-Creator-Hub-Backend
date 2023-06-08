@@ -6,7 +6,8 @@ import { Logger } from "@snowcrystals/icicle";
 import { bold } from "colorette";
 import MeasurePerformance from "./decorators/MeasurePerformance.js";
 import { User } from "#structures/User.js";
-import type { Session } from "#structures/Session.js";
+import { Session } from "#structures/Session.js";
+import DiscordOauth2 from "discord-oauth2";
 
 export class UserManager {
 	/** A collection of all the registered users */
@@ -20,6 +21,14 @@ export class UserManager {
 
 	/** The logger instance for the Content Manager */
 	public readonly logger = new Logger({ name: "User Manager", level: Utils.getLoggerLevel() });
+
+	/** Discord Oauth2 handler */
+	public readonly discordOauth2 = new DiscordOauth2({
+		clientId: process.env.DISCORD_CLIENT_ID,
+		clientSecret: process.env.DISCORD_CLIENT_SECRET,
+		redirectUri: process.env.DISCORD_CLIENT_REDIRECT_URL,
+		agent: `CreatorHub (https://scrcreate.app)`
+	} as any);
 
 	public constructor(server: CreatorHubServer) {
 		this.server = server;
@@ -48,6 +57,42 @@ export class UserManager {
 		}
 
 		this.logger.info("Initiation complete.");
+	}
+
+	/**
+	 * Handles the oauth2 and returns the authenticated Discord user
+	 * @param code The code from the Discord oauth2 flow
+	 */
+	public async getUserFromOauth2(code: string) {
+		const tokens = await this.discordOauth2.tokenRequest({ grantType: "authorization_code", scope: ["identify"], code });
+		const user = await this.discordOauth2.getUser(tokens.access_token);
+		await this.discordOauth2.revokeToken(tokens.access_token);
+
+		return user;
+	}
+
+	/**
+	 * Creates a new session for the authenticated user
+	 * @param userId The userId of the authenticated user
+	 * @param username The username of the authenticated user
+	 * @returns
+	 */
+	public async authenticateUser(userId: string, username: string) {
+		let user = this.users.get(userId);
+		if (user && user.username !== username) await user.updateUsername(username, this.server.prisma);
+		else if (!user) {
+			const userData = await this.server.prisma.user.create({ data: { createdAt: new Date(), userId, username } });
+			user = new User({ ...userData, sessions: [] }, [], []);
+
+			this.users.set(user.userId, user);
+		}
+
+		const session = await user.createSession(this.server.prisma);
+		const sessionInstance = new Session(session.session, user);
+		this.sessions.set(session.session.token, sessionInstance);
+		user.sessions.set(session.session.token, sessionInstance);
+
+		return session.sessionCookie;
 	}
 
 	/** Returns the list of available sessions -> exits with code 1 if the process fails */

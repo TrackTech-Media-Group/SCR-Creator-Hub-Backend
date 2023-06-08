@@ -101,6 +101,21 @@ export class Utils {
 	}
 
 	/**
+	 * Creates a session token
+	 * @param userId The userId
+	 * @param expiresIn The expiration time in ms
+	 */
+	public static generateSessionToken(userId: string, expiresIn: number) {
+		const token = this.randomToken(64);
+		const session = this.signJwt({ session: token, userId }, { expiresIn });
+
+		return {
+			session,
+			token
+		};
+	}
+
+	/**
 	 * Verifies the auth JWT token and state
 	 * @param cookie The XSRF-STATE-COOKIE cookie from the request
 	 * @param query The STATE query token from the request

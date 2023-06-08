@@ -4,6 +4,7 @@ config();
 import { ZodError, z } from "zod";
 import { Logger } from "@snowcrystals/icicle";
 import { bold } from "colorette";
+import { SnowflakeRegex } from "@sapphire/discord-utilities";
 
 const logger = new Logger();
 const envSchema = z.object({
@@ -17,6 +18,9 @@ const envSchema = z.object({
 	NODE_ENV: z.string(),
 
 	DISCORD_OAUTH2_URL: z.string().url(),
+	DISCORD_CLIENT_ID: z.string().regex(SnowflakeRegex),
+	DISCORD_CLIENT_SECRET: z.string(),
+	DISCORD_CLIENT_REDIRECT_URL: z.string().url(),
 
 	INTERNAL_API_KEY: z.string(),
 	INTERNAL_ENCRYPTION_KEY: z.string()

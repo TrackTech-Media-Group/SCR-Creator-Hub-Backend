@@ -1,6 +1,7 @@
-import type { User as iUser, Session as iSession } from "@prisma/client";
+import type { User as iUser, Session as iSession, PrismaClient } from "@prisma/client";
 import type { Content } from "./Content.js";
 import { Session } from "./Session.js";
+import { Utils } from "#lib/utils.js";
 
 export class User implements Omit<iUser, "bookmarks" | "recent"> {
 	/** The unique identifier for this user */
@@ -39,5 +40,33 @@ export class User implements Omit<iUser, "bookmarks" | "recent"> {
 			bookmarks: this.bookmarks.map((bookmark) => bookmark.toJSON()),
 			recent: this.recent.map((recent) => recent.toJSON())
 		};
+	}
+
+	/**
+	 * Creates a new session
+	 * @param prisma The prisma client instance
+	 */
+	public async createSession(prisma: PrismaClient) {
+		const expirationDate = new Date(Date.now() + 8.053e9);
+		const token = Utils.generateSessionToken(this.userId, 8.053e9);
+
+		const session = await prisma.session.create({
+			data: { userId: this.userId, token: token.token, expirationDate }
+		});
+
+		return {
+			sessionCookie: token.session,
+			session
+		};
+	}
+
+	/**
+	 * Updates the username
+	 * @param username The new username
+	 * @param prisma The prisma client instance
+	 */
+	public async updateUsername(username: string, prisma: PrismaClient) {
+		await prisma.user.update({ where: { userId: this.userId }, data: { username } });
+		this.username = username;
 	}
 }
