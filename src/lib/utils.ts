@@ -2,7 +2,7 @@ import { LogLevel } from "@snowcrystals/icicle";
 import type { Options as RateLimitOptions } from "express-rate-limit";
 import RedisStore from "rate-limit-redis";
 import { RedisClient } from "./constants.js";
-import jwt, { type SignOptions as JwtSignOptions } from "jsonwebtoken";
+import jwt, { type SignOptions as JwtSignOptions, type VerifyOptions as JwtVerifyOptions } from "jsonwebtoken";
 import { createCipheriv, createDecipheriv, randomBytes } from "node:crypto";
 
 // eslint-disable-next-line @typescript-eslint/no-extraneous-class
@@ -47,10 +47,19 @@ export class Utils {
 	}
 
 	/**
+	 * Creates a JWT signed token
+	 * @param value The value to add the JWT token
+	 * @param expiresIn The expiration time in ms
+	 */
+	public static verifyJwt(value: string, options?: JwtVerifyOptions) {
+		return jwt.verify(value, process.env.INTERNAL_ENCRYPTION_KEY, options);
+	}
+
+	/**
 	 * Encryptes the provided string
 	 * @param value The string to encrypt
 	 */
-	public static encryptJwt(value: string): string {
+	public static encrypt(value: string): string {
 		const iv = randomBytes(16);
 
 		const cipher = createCipheriv("aes-256-ctr", Buffer.from(process.env.INTERNAL_ENCRYPTION_KEY), iv);
@@ -63,7 +72,7 @@ export class Utils {
 	 * Decryptes the provided string
 	 * @param hash The string to decrypt
 	 */
-	public static decryptJwt(hash: string): string {
+	public static decrypt(hash: string): string {
 		const [iv, encrypted] = hash.split(":");
 
 		const decipher = createDecipheriv("aes-256-ctr", process.env.INTERNAL_ENCRYPTION_KEY, Buffer.from(iv, "hex"));
