@@ -8,10 +8,15 @@ import { HttpStatusCode } from "axios";
 import { bold } from "colorette";
 import cors from "cors";
 import { Utils } from "./utils.js";
+import { UserManager } from "./UserManager.js";
+import bodyParser from "body-parser";
 
 export class CreatorHubServer extends Server {
 	/** The manager responsible for all the content on Creator Hub */
 	public readonly contentManager: ContentManager = new ContentManager(this);
+
+	/** The manager responsible for all the content on Creator Hub */
+	public readonly userManager: UserManager = new UserManager(this);
 
 	/** The bridge between the application and the PostgreSQL database */
 	public readonly prisma = new PrismaClient();
@@ -24,13 +29,14 @@ export class CreatorHubServer extends Server {
 
 	public async start() {
 		await this.contentManager.load();
+		await this.userManager.load();
 		await this.prisma.$connect();
 
 		await this.listen(3000, () => new Logger({ name: "Server" }).info(`Running on port ${bold(3000)}: http://localhost:${3000}`));
 	}
 
 	public override async listen(port: number, cb?: () => void) {
-		this.express.use(this.cors);
+		this.express.use(this.cors, bodyParser.json());
 
 		await this.middlewareHandler.loadAll(this);
 		await this.routeHandler.loadAll(this);

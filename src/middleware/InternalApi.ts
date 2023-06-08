@@ -10,6 +10,10 @@ export default class extends Middleware<CreatorHubServer> {
 		return this.run(req, res, next);
 	}
 
+	public [methods.POST](req: Request, res: Response, next: NextFunction) {
+		return this.run(req, res, next);
+	}
+
 	private run(req: Request, res: Response, next: NextFunction) {
 		if (process.env.NODE_ENV === "development") return next();
 
