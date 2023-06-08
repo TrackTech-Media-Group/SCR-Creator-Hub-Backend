@@ -1,5 +1,6 @@
 import type { CreatorHubServer } from "#lib/Server.js";
 import { CONTENT_TYPE_FILTER, type ContentTypeFilter } from "#lib/constants.js";
+import MeasurePerformance from "#lib/decorators/MeasurePerformance.js";
 import { Utils } from "#lib/utils.js";
 import { Route, methods } from "@snowcrystals/highway";
 import type { Request, Response } from "express";
@@ -15,6 +16,7 @@ export default class extends Route<CreatorHubServer> {
 		this.router.use(ratelimit);
 	}
 
+	@MeasurePerformance({ name: "Route#search(Methods.GET)" })
 	public [methods.GET](req: Request, res: Response) {
 		const query = this.cleanQuery(req.query);
 		let content = this.getContent(query.type, query.tag);
