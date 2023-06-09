@@ -116,6 +116,41 @@ export class UserManager {
 		await this.server.prisma.session.delete({ where: { token: sessionToken } });
 	}
 
+	/**
+	 * Destroys all user sessions
+	 * @param userId The id of the user
+	 */
+	public async deleteSessions(userId: string) {
+		const user = this.users.get(userId);
+		if (!user) return;
+
+		const sessions = [...user.sessions.values()];
+		const ids = sessions.map((session) => session.token);
+
+		user.sessions.clear();
+		ids.forEach((id) => this.sessions.delete(id));
+		await this.server.prisma.session.deleteMany({ where: { token: { in: ids } } });
+	}
+
+	/**
+	 * Destroys all user sessions
+	 * @param userId The id of the user
+	 */
+	public async deleteUser(userId: string) {
+		const user = this.users.get(userId);
+		if (!user) return;
+
+		const sessions = [...user.sessions.values()];
+		const ids = sessions.map((session) => session.token);
+
+		user.sessions.clear();
+		ids.forEach((id) => this.sessions.delete(id));
+		this.users.delete(userId);
+
+		await this.server.prisma.session.deleteMany({ where: { token: { in: ids } } });
+		await this.server.prisma.user.delete({ where: { userId } });
+	}
+
 	/** Returns the list of available sessions -> exits with code 1 if the process fails */
 	private async getAllSessions() {
 		const onReject = (error: any) => {
