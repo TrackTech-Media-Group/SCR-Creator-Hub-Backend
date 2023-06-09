@@ -17,21 +17,20 @@ export default class extends Middleware<CreatorHubServer> {
 
 	private run(req: Request, res: Response, next: NextFunction, context: Record<string, unknown>) {
 		const { authorization } = req.headers;
-		const badHeaderError = new ApiError(HttpStatusCode.BadRequest, { authorization: "Invalid header provided" });
-		const modifiedHeaderError = new ApiError(HttpStatusCode.Forbidden, { authorization: "Modified header provided" });
+		const unauhtorizedError = new ApiError(HttpStatusCode.Unauthorized, { authorization: "Invalid/expired header provided" });
 
-		if (!authorization || typeof authorization !== "string") return next(badHeaderError);
-		if (!authorization.startsWith("User")) return next(badHeaderError);
+		if (!authorization || typeof authorization !== "string") return next(unauhtorizedError);
+		if (!authorization.startsWith("User")) return next(unauhtorizedError);
 
 		const [, session] = authorization.split(/ +/g);
-		if (!session) return next(badHeaderError);
+		if (!session) return next(unauhtorizedError);
 
 		const jwt = Utils.verifyJwt(session, { ignoreExpiration: false, complete: true });
-		if (typeof jwt !== "object" || !jwt.payload.userId || !jwt.payload.session) return next(modifiedHeaderError);
+		if (typeof jwt !== "object" || !jwt.payload.userId || !jwt.payload.session) return next(unauhtorizedError);
 
 		const jwtPayload = jwt.payload;
 		const sessionData = this.server.userManager.sessions.get(jwtPayload.session);
-		if (!sessionData || sessionData.user.userId !== jwtPayload.userId) return next(modifiedHeaderError);
+		if (!sessionData || sessionData.user.userId !== jwtPayload.userId) return next(unauhtorizedError);
 
 		context.user = sessionData.user;
 		next();
