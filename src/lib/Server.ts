@@ -10,6 +10,7 @@ import cors from "cors";
 import { Utils } from "./utils.js";
 import { UserManager } from "./UserManager.js";
 import bodyParser from "body-parser";
+import cookieParser from "cookie-parser";
 
 export class CreatorHubServer extends Server {
 	/** The manager responsible for all the content on Creator Hub */
@@ -36,7 +37,7 @@ export class CreatorHubServer extends Server {
 	}
 
 	public override async listen(port: number, cb?: () => void) {
-		this.express.use(this.cors, bodyParser.json());
+		this.express.use(this.cors, bodyParser.json(), cookieParser());
 
 		await this.middlewareHandler.loadAll(this);
 		await this.routeHandler.loadAll(this);
