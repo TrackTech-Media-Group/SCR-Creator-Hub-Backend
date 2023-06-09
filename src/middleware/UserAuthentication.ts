@@ -15,6 +15,10 @@ export default class extends Middleware<CreatorHubServer> {
 		return this.run(req, res, next, context);
 	}
 
+	public [methods.DELETE](req: Request, res: Response, next: NextFunction, context: Record<string, unknown>) {
+		return this.run(req, res, next, context);
+	}
+
 	private run(req: Request, res: Response, next: NextFunction, context: Record<string, unknown>) {
 		const { authorization } = req.headers;
 		const unauhtorizedError = new ApiError(HttpStatusCode.Unauthorized, { authorization: "Invalid/expired header provided" });
