@@ -31,6 +31,7 @@ export class Utils {
 			legacyHeaders: true,
 			message: { "*": "Too many requests, please try again later." },
 			store: new RedisStore({ sendCommand: (...args: string[]) => RedisClient.sendCommand(args) }),
+			keyGenerator: (req) => Buffer.from(`${req.ip}-${req.path}`).toString("base64"),
 			...options
 		};
 

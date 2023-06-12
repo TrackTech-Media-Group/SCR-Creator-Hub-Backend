@@ -11,10 +11,10 @@ export class User implements Omit<iUser, "bookmarks" | "recent"> {
 	public username: string;
 
 	/** The recently viewed content */
-	public readonly recent: Content[];
+	public recent: Content[];
 
 	/** The bookmarked content */
-	public readonly bookmarks: Content[];
+	public bookmarks: Content[];
 
 	/** The date the account was created */
 	public readonly createdAt: Date;
@@ -68,5 +68,24 @@ export class User implements Omit<iUser, "bookmarks" | "recent"> {
 	public async updateUsername(username: string, prisma: PrismaClient) {
 		await prisma.user.update({ where: { userId: this.userId }, data: { username } });
 		this.username = username;
+	}
+
+	/**
+	 * (Un)bookmarks a content item
+	 * @param item The item to (un)bookmark
+	 * @param prisma The prisma client instance
+	 */
+	public async toggleBookmark(item: Content, prisma: PrismaClient) {
+		const bookmarks = this.bookmarks.some((content) => content.id === item.id)
+			? this.bookmarks.filter((content) => content.id !== item.id)
+			: [...this.bookmarks, item];
+
+		await prisma.user.update({
+			where: { userId: this.userId },
+			data: { bookmarks: bookmarks.map((content) => content.id) }
+		});
+
+		this.bookmarks = bookmarks;
+		return bookmarks.includes(item);
 	}
 }

@@ -63,7 +63,6 @@ export class Tag implements iTag {
 	 */
 	public hasType(type: ContentTypeFilter): boolean {
 		const filterContent = (content: Content) => {
-			console.log(content.name, content.type);
 			if (type === "all") return true;
 			return content.type === type;
 		};
