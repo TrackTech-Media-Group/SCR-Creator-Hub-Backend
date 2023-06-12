@@ -151,6 +151,21 @@ export class UserManager {
 		await this.server.prisma.user.delete({ where: { userId } });
 	}
 
+	/**
+	 * Adds a content item to the recents list of a user
+	 * @param user the user
+	 * @param id The id to add
+	 */
+	public async updateRecent(user: User, id: string) {
+		const item = this.server.contentManager.content.get(id);
+		if (!item) return;
+
+		const deduplicated = new Set([item, ...user.recent]);
+
+		user.recent = [...deduplicated].slice(0, 100);
+		await this.server.prisma.user.update({ where: { userId: user.userId }, data: { recent: user.recent.map((content) => content.id) } });
+	}
+
 	/** Returns the list of available sessions -> exits with code 1 if the process fails */
 	private async getAllSessions() {
 		const onReject = (error: any) => {
