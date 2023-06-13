@@ -21,9 +21,9 @@ export default class extends Route<CreatorHubServer> {
 			}
 
 			const user = await this.server.userManager.getUserFromOauth2(code);
-			const sessionCookie = await this.server.userManager.authenticateUser(user.id, user.username);
+			const { cookie, expire } = await this.server.userManager.authenticateUser(user.id, user.username);
 
-			res.send(sessionCookie);
+			res.send({ cookie, expire });
 		} catch (err) {
 			this.logger.error(`(POST) => Unknown error occured while processing authentication request: `, err);
 			const error = new ApiError(HttpStatusCode.InternalServerError, { "*": "An error occured while processing the authentication request." });
