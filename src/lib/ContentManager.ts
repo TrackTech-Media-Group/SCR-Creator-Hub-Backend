@@ -28,6 +28,35 @@ export class ContentManager {
 		return "ContentManager";
 	}
 
+	/**
+	 * Deletes a tag
+	 * @param id The tag to delete
+	 */
+	public async deleteTag(id: string) {
+		if (!this.tags.has(id)) return;
+
+		await this.server.prisma.tag.delete({ where: { id } });
+		this.tags.delete(id);
+
+		for (const item of this.content.values()) {
+			item.tagIds = item.tagIds.filter((tag) => tag !== id);
+			item.tags = item.tags.filter((tag) => tag.id !== id);
+		}
+	}
+
+	/**
+	 * Creates a tag
+	 * @param id The id of the tag
+	 * @param name The name of the tag
+	 */
+	public async addTag(id: string, name: string) {
+		if (this.tags.has(id)) return;
+
+		const tagData = await this.server.prisma.tag.create({ data: { id, name } });
+		const tag = new Tag(tagData, this.server);
+		this.tags.set(id, tag);
+	}
+
 	/** Loads all the data from the PostgreSQL database -> exists with code 1 if the process fails */
 	@MeasurePerformance({ async: true })
 	public async load() {
