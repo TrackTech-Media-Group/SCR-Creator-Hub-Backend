@@ -99,7 +99,7 @@ export class UserManager {
 		this.sessions.set(session.session.token, sessionInstance);
 		user.sessions.set(session.session.token, sessionInstance);
 
-		return session.sessionCookie;
+		return { cookie: session.sessionCookie, expire: session.session.expirationDate };
 	}
 
 	/**
