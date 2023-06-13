@@ -29,6 +29,31 @@ export class ContentManager {
 	}
 
 	/**
+	 * Creates a new content item
+	 * @param data The content data
+	 */
+	public async createContent(data: Omit<iContent, "id" | "tagIds"> & { downloads: Omit<Download, "footageId" | "id">[]; tags: iTag[] }) {
+		const content = await this.server.prisma.footage.create({
+			data: {
+				name: data.name,
+				type: data.type,
+				preview: data.preview,
+				useCases: data.useCases,
+				tagIds: data.tags.map((tag) => tag.id),
+				downloads: {
+					// data.downloads still contain the isPreview boolean, removing this statement will result in invalidArgs errors from prisma
+					createMany: { data: data.downloads.map((download) => ({ name: download.name, url: download.url })), skipDuplicates: true }
+				}
+			},
+			include: { downloads: true }
+		});
+
+		const tags = content.tagIds.map((id) => this.tags.get(id)).filter(Boolean) as Tag[];
+		const contentInstance = new Content({ ...content, tags }, this.server);
+		this.content.set(contentInstance.id, contentInstance);
+	}
+
+	/**
 	 * Deletes a tag
 	 * @param id The tag to delete
 	 */
