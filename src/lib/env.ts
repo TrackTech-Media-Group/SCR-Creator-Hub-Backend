@@ -23,7 +23,11 @@ const envSchema = z.object({
 	DISCORD_CLIENT_REDIRECT_URL: z.string().url(),
 
 	INTERNAL_API_KEY: z.string(),
-	INTERNAL_ENCRYPTION_KEY: z.string()
+	INTERNAL_ENCRYPTION_KEY: z.string(),
+
+	UPLOAD_API_KEY: z.string(),
+	UPLOAD_API_URL: z.string().url(),
+	UPLOAD_CHUNK_API_URL: z.string().url()
 });
 
 try {
