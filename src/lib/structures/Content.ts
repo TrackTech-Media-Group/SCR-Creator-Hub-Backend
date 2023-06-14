@@ -2,6 +2,7 @@ import type { Footage as iFootage, Download as iDownload } from "@prisma/client"
 import { Download } from "./Download.js";
 import { Tag } from "./Tag.js";
 import type { CreatorHubServer } from "#lib/Server.js";
+import type { ContentType } from "#lib/constants.js";
 
 type FullContent = iFootage & { downloads: iDownload[]; tags: Tag[] };
 
@@ -19,7 +20,7 @@ export class Content implements iFootage {
 	public tagIds: string[];
 
 	/** The content type */
-	public readonly type: "video" | "image" | "music";
+	public readonly type: ContentType;
 
 	/** The use cases for this item */
 	public useCases: string[];

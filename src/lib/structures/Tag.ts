@@ -46,8 +46,11 @@ export class Tag implements iTag {
 	 * @param amount The amount of items you want to get
 	 */
 	public getRandomContent(amount: number, type: ContentTypeFilter) {
-		const startIndex = Math.max(0, Math.floor(Math.random() * this.content.length) - amount);
-		const randomItems = this.getFiltered(type).slice(startIndex, startIndex + amount);
+		const content = this.getFiltered(type);
+		const correctedAmount = amount > content.length ? 0 : amount;
+
+		const startIndex = Math.max(0, Math.floor(Math.random() * content.length) - correctedAmount);
+		const randomItems = content.slice(startIndex, startIndex + amount);
 
 		return randomItems;
 	}
