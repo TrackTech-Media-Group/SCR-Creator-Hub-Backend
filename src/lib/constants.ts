@@ -1,4 +1,5 @@
 import type { User } from "#structures/User.js";
+import type { Tag } from "@prisma/client";
 import { createClient } from "redis";
 
 export type ContentType = "image" | "music" | "video";
@@ -16,3 +17,11 @@ export const RedisClient = createClient({
 		port: Number(process.env.REDIS_RATELIMIT_CACHE_PORT)
 	}
 });
+
+export interface UpdateContentPayload {
+	name?: string;
+	type?: ContentType;
+	useCases?: string[];
+	tags?: Tag[];
+	downloads: { name: string; url: string; isPreview: boolean }[];
+}

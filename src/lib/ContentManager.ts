@@ -6,6 +6,7 @@ import type { Tag as iTag, Footage as iContent, Download } from "@prisma/client"
 import { Logger } from "@snowcrystals/icicle";
 import { bold } from "colorette";
 import MeasurePerformance from "./decorators/MeasurePerformance.js";
+import type { UpdateContentPayload } from "./constants.js";
 
 export class ContentManager {
 	/** A collection of all the available tags */
@@ -50,6 +51,45 @@ export class ContentManager {
 
 		const tags = content.tagIds.map((id) => this.tags.get(id)).filter(Boolean) as Tag[];
 		const contentInstance = new Content({ ...content, tags }, this.server);
+		this.content.set(contentInstance.id, contentInstance);
+	}
+
+	/**
+	 * Updates a content item
+	 * @param id The content item to update
+	 * @param data The update payload
+	 */
+	public async updateContent(id: string, data: Partial<UpdateContentPayload>) {
+		const content = this.content.get(id);
+		if (!content) return;
+		if (data.tags) data.tags = data.tags.filter((tag) => this.tags.has(tag.id));
+
+		let downloads = content.downloads.map((download) => ({ id: download.id }));
+		if (data.downloads) {
+			const downloadUrls = data.downloads.map((download) => download.url);
+			const deleteDownloads = content.downloads.filter((download) => !downloadUrls.includes(download.url));
+			const createDownloads = data.downloads.filter((newDownload) => content.downloads.every((download) => download.url !== newDownload.url));
+
+			await this.server.prisma.download.deleteMany({ where: { id: { in: deleteDownloads.map((download) => download.id) } } });
+			if (createDownloads)
+				await this.server.prisma.download.createMany({
+					data: createDownloads.map((download) => ({ name: download.name, url: download.url, footageId: content.id })),
+					skipDuplicates: true
+				});
+
+			const newDownloads = await this.server.prisma.download.findMany({ where: { footageId: content.id } });
+			downloads = newDownloads.map((download) => ({ id: download.id }));
+		}
+
+		const updatedContent = await this.server.prisma.footage.update({
+			where: { id },
+			data: { ...data, downloads: { set: downloads } },
+			include: { downloads: true }
+		});
+
+		const tags = updatedContent.tagIds.map((id) => this.tags.get(id)).filter(Boolean) as Tag[];
+		const contentInstance = new Content({ ...updatedContent, tags }, this.server);
+
 		this.content.set(contentInstance.id, contentInstance);
 	}
 

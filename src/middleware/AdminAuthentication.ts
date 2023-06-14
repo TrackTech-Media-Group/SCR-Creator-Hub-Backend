@@ -16,6 +16,10 @@ export default class extends Middleware<CreatorHubServer> {
 		return this.run(req, res, next, context);
 	}
 
+	public [methods.PUT](req: Request, res: Response, next: NextFunction, context: Record<string, unknown>) {
+		return this.run(req, res, next, context);
+	}
+
 	public [methods.DELETE](req: Request, res: Response, next: NextFunction, context: Record<string, unknown>) {
 		return this.run(req, res, next, context);
 	}
