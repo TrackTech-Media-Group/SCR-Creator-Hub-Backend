@@ -6,6 +6,7 @@ import type { Tag as iTag, Footage as iContent, Download } from "@prisma/client"
 import { Logger } from "@snowcrystals/icicle";
 import { bold } from "colorette";
 import MeasurePerformance from "./decorators/MeasurePerformance.js";
+import type { UpdateContentPayload } from "./constants.js";
 
 export class ContentManager {
 	/** A collection of all the available tags */
@@ -26,6 +27,116 @@ export class ContentManager {
 
 	public toString() {
 		return "ContentManager";
+	}
+
+	/**
+	 * Creates a new content item
+	 * @param data The content data
+	 */
+	public async createContent(data: Omit<iContent, "id" | "tagIds"> & { downloads: Omit<Download, "footageId" | "id">[]; tags: iTag[] }) {
+		const content = await this.server.prisma.footage.create({
+			data: {
+				name: data.name,
+				type: data.type,
+				preview: data.preview,
+				useCases: data.useCases,
+				tagIds: data.tags.map((tag) => tag.id),
+				downloads: {
+					// data.downloads still contain the isPreview boolean, removing this statement will result in invalidArgs errors from prisma
+					createMany: { data: data.downloads.map((download) => ({ name: download.name, url: download.url })), skipDuplicates: true }
+				}
+			},
+			include: { downloads: true }
+		});
+
+		const tags = content.tagIds.map((id) => this.tags.get(id)).filter(Boolean) as Tag[];
+		const contentInstance = new Content({ ...content, tags }, this.server);
+		this.content.set(contentInstance.id, contentInstance);
+	}
+
+	/**
+	 * Updates a content item
+	 * @param id The content item to update
+	 * @param data The update payload
+	 */
+	public async updateContent(id: string, data: Partial<UpdateContentPayload>) {
+		const content = this.content.get(id);
+		if (!content) return;
+		if (data.tags) data.tags = data.tags.filter((tag) => this.tags.has(tag.id));
+
+		let downloads = content.downloads.map((download) => ({ id: download.id }));
+		if (data.downloads) {
+			const downloadUrls = data.downloads.map((download) => download.url);
+			const deleteDownloads = content.downloads.filter((download) => !downloadUrls.includes(download.url));
+			const createDownloads = data.downloads.filter((newDownload) => content.downloads.every((download) => download.url !== newDownload.url));
+
+			await this.server.prisma.download.deleteMany({ where: { id: { in: deleteDownloads.map((download) => download.id) } } });
+			if (createDownloads)
+				await this.server.prisma.download.createMany({
+					data: createDownloads.map((download) => ({ name: download.name, url: download.url, footageId: content.id })),
+					skipDuplicates: true
+				});
+
+			const newDownloads = await this.server.prisma.download.findMany({ where: { footageId: content.id } });
+			downloads = newDownloads.map((download) => ({ id: download.id }));
+		}
+
+		const updatedContent = await this.server.prisma.footage.update({
+			where: { id },
+			data: { ...data, downloads: { set: downloads } },
+			include: { downloads: true }
+		});
+
+		const tags = updatedContent.tagIds.map((id) => this.tags.get(id)).filter(Boolean) as Tag[];
+		const contentInstance = new Content({ ...updatedContent, tags }, this.server);
+
+		this.content.set(contentInstance.id, contentInstance);
+	}
+
+	/**
+	 * Deletes a content item
+	 * @param id The content item to delete
+	 */
+	public async deleteContent(id: string) {
+		if (!this.content.has(id)) return;
+
+		await this.server.prisma.download.deleteMany({ where: { footageId: id } });
+		await this.server.prisma.footage.delete({ where: { id } });
+		this.content.delete(id);
+
+		for (const user of this.server.userManager.users.values()) {
+			user.bookmarks = user.bookmarks.filter((item) => item.id !== id);
+			user.recent = user.recent.filter((item) => item.id !== id);
+		}
+	}
+
+	/**
+	 * Deletes a tag
+	 * @param id The tag to delete
+	 */
+	public async deleteTag(id: string) {
+		if (!this.tags.has(id)) return;
+
+		await this.server.prisma.tag.delete({ where: { id } });
+		this.tags.delete(id);
+
+		for (const item of this.content.values()) {
+			item.tagIds = item.tagIds.filter((tag) => tag !== id);
+			item.tags = item.tags.filter((tag) => tag.id !== id);
+		}
+	}
+
+	/**
+	 * Creates a tag
+	 * @param id The id of the tag
+	 * @param name The name of the tag
+	 */
+	public async addTag(id: string, name: string) {
+		if (this.tags.has(id)) return;
+
+		const tagData = await this.server.prisma.tag.create({ data: { id, name } });
+		const tag = new Tag(tagData, this.server);
+		this.tags.set(id, tag);
 	}
 
 	/** Loads all the data from the PostgreSQL database -> exists with code 1 if the process fails */

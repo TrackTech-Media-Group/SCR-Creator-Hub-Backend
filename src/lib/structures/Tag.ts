@@ -33,6 +33,14 @@ export class Tag implements iTag {
 		};
 	}
 
+	public getStats() {
+		return {
+			image: this.content.filter((content) => content.isImage()).length,
+			video: this.content.filter((content) => content.isVideo()).length,
+			music: this.content.filter((content) => content.isMusic()).length
+		};
+	}
+
 	/**
 	 * Returns a random list of x amount of content
 	 * @param amount The amount of items you want to get
