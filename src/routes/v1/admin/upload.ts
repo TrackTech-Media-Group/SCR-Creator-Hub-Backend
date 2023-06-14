@@ -26,7 +26,7 @@ interface ContentCreateItem {
 	downloads: UploadDownload[];
 }
 
-@ApplyOptions<Route.Options>({ middleware: [[methods.POST, "admin-authentication"]] })
+@ApplyOptions<Route.Options>({ middleware: [[methods.POST, "csrf-token-verification", "admin-authentication"]] })
 export default class extends Route<CreatorHubServer> {
 	public logger = new Logger({ name: `AdminApi#Upload(methods.POST)` });
 

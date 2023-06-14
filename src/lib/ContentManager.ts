@@ -54,6 +54,23 @@ export class ContentManager {
 	}
 
 	/**
+	 * Deletes a content item
+	 * @param id The content item to delete
+	 */
+	public async deleteContent(id: string) {
+		if (!this.content.has(id)) return;
+
+		await this.server.prisma.download.deleteMany({ where: { footageId: id } });
+		await this.server.prisma.footage.delete({ where: { id } });
+		this.content.delete(id);
+
+		for (const user of this.server.userManager.users.values()) {
+			user.bookmarks = user.bookmarks.filter((item) => item.id !== id);
+			user.recent = user.recent.filter((item) => item.id !== id);
+		}
+	}
+
+	/**
 	 * Deletes a tag
 	 * @param id The tag to delete
 	 */

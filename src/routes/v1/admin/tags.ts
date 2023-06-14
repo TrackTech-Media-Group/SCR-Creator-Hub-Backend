@@ -7,8 +7,9 @@ import z, { ZodError } from "zod";
 
 @ApplyOptions<Route.Options>({
 	middleware: [
-		[methods.GET, "admin-authentication"],
-		[methods.DELETE, "admin-authentication"]
+		[methods.GET, "csrf-token-verification", "admin-authentication"],
+		[methods.DELETE, "csrf-token-verification", "admin-authentication"],
+		[methods.POST, "csrf-token-verification", "admin-authentication"]
 	]
 })
 export default class extends Route<CreatorHubServer> {
