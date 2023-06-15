@@ -66,11 +66,7 @@ export class ContentManager {
 
 		let downloads = content.downloads.map((download) => ({ id: download.id }));
 		if (data.downloads) {
-			const downloadUrls = data.downloads.map((download) => download.url);
-			const deleteDownloads = content.downloads.filter((download) => !downloadUrls.includes(download.url));
 			const createDownloads = data.downloads.filter((newDownload) => content.downloads.every((download) => download.url !== newDownload.url));
-
-			await this.server.prisma.download.deleteMany({ where: { id: { in: deleteDownloads.map((download) => download.id) } } });
 			if (createDownloads)
 				await this.server.prisma.download.createMany({
 					data: createDownloads.map((download) => ({ name: download.name, url: download.url, footageId: content.id })),
