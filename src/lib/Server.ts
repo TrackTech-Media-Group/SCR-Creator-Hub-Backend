@@ -50,6 +50,16 @@ export class CreatorHubServer extends Server {
 		return this.express.listen(port, cb);
 	}
 
+	/**
+	 * Handles unhandled exceptions
+	 * @param error The error that was thrown
+	 * @param origin The origin of the error
+	 */
+	public unhandledException(error: Error, origin: NodeJS.UncaughtExceptionOrigin) {
+		this.logger.error(`${bold(origin)} => `, error);
+		void this.exit();
+	}
+
 	/** The function that should be called before the program exists */
 	public async exit() {
 		this.logger.info("Shutting down...");
