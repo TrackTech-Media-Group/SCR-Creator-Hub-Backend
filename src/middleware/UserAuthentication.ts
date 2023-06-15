@@ -29,14 +29,18 @@ export default class extends Middleware<CreatorHubServer> {
 		const [, session] = authorization.split(/ +/g);
 		if (!session) return next(unauhtorizedError);
 
-		const jwt = Utils.verifyJwt(session, { ignoreExpiration: false, complete: true });
-		if (typeof jwt !== "object" || !jwt.payload.userId || !jwt.payload.session) return next(unauhtorizedError);
+		try {
+			const jwt = Utils.verifyJwt(session, { ignoreExpiration: false, complete: true });
+			if (typeof jwt !== "object" || !jwt.payload.userId || !jwt.payload.session) return next(unauhtorizedError);
 
-		const jwtPayload = jwt.payload;
-		const sessionData = this.server.userManager.sessions.get(jwtPayload.session);
-		if (!sessionData || sessionData.user.userId !== jwtPayload.userId) return next(unauhtorizedError);
+			const jwtPayload = jwt.payload;
+			const sessionData = this.server.userManager.sessions.get(jwtPayload.session);
+			if (!sessionData || sessionData.user.userId !== jwtPayload.userId) return next(unauhtorizedError);
 
-		context.user = sessionData.user;
-		next();
+			context.user = sessionData.user;
+			next();
+		} catch (error) {
+			next(unauhtorizedError);
+		}
 	}
 }

@@ -20,16 +20,20 @@ export default class extends Middleware<CreatorHubServer> {
 		const [, session] = authorization.split(/ +/g);
 		if (!session) return next();
 
-		const jwt = Utils.verifyJwt(session, { ignoreExpiration: false, complete: true });
-		if (typeof jwt !== "object" || !jwt.payload.userId || !jwt.payload.session) return next();
+		try {
+			const jwt = Utils.verifyJwt(session, { ignoreExpiration: false, complete: true });
+			if (typeof jwt !== "object" || !jwt.payload.userId || !jwt.payload.session) return next();
 
-		const jwtPayload = jwt.payload;
-		const sessionData = this.server.userManager.sessions.get(jwtPayload.session);
-		if (!sessionData || sessionData.user.userId !== jwtPayload.userId) return next();
+			const jwtPayload = jwt.payload;
+			const sessionData = this.server.userManager.sessions.get(jwtPayload.session);
+			if (!sessionData || sessionData.user.userId !== jwtPayload.userId) return next();
 
-		context.user = sessionData.user;
-		void this.server.userManager.updateRecent(sessionData.user, id);
+			context.user = sessionData.user;
+			void this.server.userManager.updateRecent(sessionData.user, id);
 
-		next();
+			next();
+		} catch (error) {
+			next();
+		}
 	}
 }
