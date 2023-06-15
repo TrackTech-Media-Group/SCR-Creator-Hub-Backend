@@ -11,6 +11,7 @@ import { Utils } from "./utils.js";
 import { UserManager } from "./UserManager.js";
 import bodyParser from "body-parser";
 import cookieParser from "cookie-parser";
+import { SyncManager } from "./SyncManager.js";
 
 export class CreatorHubServer extends Server {
 	/** The manager responsible for all the content on Creator Hub */
@@ -18,6 +19,9 @@ export class CreatorHubServer extends Server {
 
 	/** The manager responsible for all the content on Creator Hub */
 	public readonly userManager: UserManager = new UserManager(this);
+
+	/** The manager responsible for syncing the data between the server and database */
+	public readonly syncManager: SyncManager = new SyncManager(this);
 
 	/** The bridge between the application and the PostgreSQL database */
 	public readonly prisma = new PrismaClient();
@@ -44,6 +48,16 @@ export class CreatorHubServer extends Server {
 
 		this.express.use(this.handleApiError.bind(this));
 		return this.express.listen(port, cb);
+	}
+
+	/** The function that should be called before the program exists */
+	public async exit() {
+		this.logger.info("Shutting down...");
+
+		this.syncManager.cron.stop();
+		await this.syncManager.syncAll();
+
+		process.exit();
 	}
 
 	private handleApiError(error: any, req: Request, res: Response, next: NextFunction) {
