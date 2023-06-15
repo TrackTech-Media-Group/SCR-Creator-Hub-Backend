@@ -28,7 +28,7 @@ export default class extends Route<CreatorHubServer> {
 
 		if (preview) {
 			const previewItems = tag.getRandomContent(12, type);
-			res.set("Cache-Control", "public, max-age=3600").json(previewItems);
+			res.json(previewItems);
 			return;
 		}
 
@@ -36,7 +36,7 @@ export default class extends Route<CreatorHubServer> {
 		const chunks = _.chunk(filteredContent, 100);
 		const chunk = page > chunks.length || page <= 0 ? chunks[0] : chunks[page - 1];
 
-		res.set("Cache-Control", "public, max-age=3600").json({ entries: chunk, pages: chunks.length });
+		res.json({ entries: chunk, pages: chunks.length });
 	}
 
 	/**

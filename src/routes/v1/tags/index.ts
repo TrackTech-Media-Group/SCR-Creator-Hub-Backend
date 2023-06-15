@@ -17,7 +17,7 @@ export default class extends Route<CreatorHubServer> {
 		const tags = [...this.server.contentManager.tags.values()];
 		const { type } = this.parseQuery(req.query);
 
-		res.set("Cache-Control", "public, max-age=3600").json(tags.filter((tag) => tag.hasType(type)));
+		res.json(tags.filter((tag) => tag.hasType(type)));
 	}
 
 	/**
