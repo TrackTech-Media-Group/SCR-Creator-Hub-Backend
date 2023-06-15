@@ -7,7 +7,7 @@ import z, { ZodError } from "zod";
 
 @ApplyOptions<Route.Options>({
 	middleware: [
-		[methods.GET, "csrf-token-verification", "admin-authentication"],
+		[methods.GET, "admin-authentication"],
 		[methods.DELETE, "csrf-token-verification", "admin-authentication"],
 		[methods.POST, "csrf-token-verification", "admin-authentication"]
 	]
