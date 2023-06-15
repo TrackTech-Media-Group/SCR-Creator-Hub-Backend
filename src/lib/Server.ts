@@ -55,19 +55,9 @@ export class CreatorHubServer extends Server {
 	 * @param error The error that was thrown
 	 * @param origin The origin of the error
 	 */
-	public unhandledException(error: Error, origin: NodeJS.UncaughtExceptionOrigin) {
+	public async unhandledException(error: Error, origin: NodeJS.UncaughtExceptionOrigin) {
 		this.logger.error(`${bold(origin)} => `, error);
-		void this.exit();
-	}
-
-	/** The function that should be called before the program exists */
-	public async exit() {
-		this.logger.info("Shutting down...");
-
-		this.syncManager.cron.stop();
 		await this.syncManager.syncAll();
-
-		process.exit();
 	}
 
 	private handleApiError(error: any, req: Request, res: Response, next: NextFunction) {

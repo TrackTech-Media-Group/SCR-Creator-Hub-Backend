@@ -13,7 +13,6 @@ void (async () => {
 	const server = new CreatorHubServer({ middlewarePath: join(__dirname, "middleware"), routePath: join(__dirname, "routes") });
 	await server.start();
 
-	process.on("beforeExit", server.exit.bind(server));
-	process.on("SIGINT", server.exit.bind(server));
+	process.on("beforeExit", server.syncManager.syncAll.bind(server.syncManager));
 	process.on("uncaughtException", server.unhandledException.bind(server));
 })();
