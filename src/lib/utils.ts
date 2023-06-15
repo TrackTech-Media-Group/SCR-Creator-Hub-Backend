@@ -17,7 +17,7 @@ export class Utils {
 	 * Returns an array of allowed origins
 	 */
 	public static getCorsOrigins(): string[] {
-		const origins = ["scrcreate.app", "beta.scrcreate.app"];
+		const origins = ["https://scrcreate.app", "https://beta.scrcreate.app"];
 		return process.env.NODE_ENV === "development" ? [...origins, "http://localhost:3001"] : origins;
 	}
 

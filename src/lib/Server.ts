@@ -37,7 +37,8 @@ export class CreatorHubServer extends Server {
 		await this.userManager.load();
 		await this.prisma.$connect();
 
-		await this.listen(3000, () => new Logger({ name: "Server" }).info(`Running on port ${bold(3000)}: http://localhost:${3000}`));
+		const port = Number(process.env.PORT);
+		await this.listen(port, () => new Logger({ name: "Server" }).info(`Running on port ${bold(port)}: http://localhost:${port}`));
 	}
 
 	public override async listen(port: number, cb?: () => void) {
