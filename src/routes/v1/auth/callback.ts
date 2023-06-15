@@ -25,7 +25,7 @@ export default class extends Route<CreatorHubServer> {
 
 			res.send({ cookie, expire });
 		} catch (err) {
-			this.logger.error(`(POST) => Unknown error occured while processing authentication request: `, err);
+			this.logger.error(`(POST) => Unknown error occured while processing authentication request: ${Object.keys(err)}`, err);
 			const error = new ApiError(HttpStatusCode.InternalServerError, { "*": "An error occured while processing the authentication request." });
 			next(error);
 		}
