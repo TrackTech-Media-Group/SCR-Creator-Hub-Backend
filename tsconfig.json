@@ -10,6 +10,7 @@
 		"paths": {
 			"#structures/*": ["./src/lib/structures/*"],
 			"#lib/*": ["./src/lib/*"],
+			"#sitemap/*": ["./src/lib/sitemap/*"],
 			"#errors/*": ["./src/lib/errors/*"]
 		}
 	},
