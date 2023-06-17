@@ -59,14 +59,20 @@ export class ContentManager {
 	 * @param id The content item to update
 	 * @param data The update payload
 	 */
-	public async updateContent(id: string, data: Partial<UpdateContentPayload>) {
+	public async updateContent(id: string, _data: Partial<UpdateContentPayload>) {
+		const data: Record<string, any> = { ..._data };
 		const content = this.content.get(id);
 		if (!content) return;
-		if (data.tags) data.tags = data.tags.filter((tag) => this.tags.has(tag.id));
+		if (_data.tags) {
+			const tags = _data.tags.filter((tag) => this.tags.has(tag.id)).map((tag) => tag.id);
+			delete data.tags;
+
+			data.tagIds = tags;
+		}
 
 		let downloads = content.downloads.map((download) => ({ id: download.id }));
-		if (data.downloads) {
-			const createDownloads = data.downloads.filter((newDownload) => content.downloads.every((download) => download.url !== newDownload.url));
+		if (_data.downloads) {
+			const createDownloads = _data.downloads.filter((newDownload) => content.downloads.every((download) => download.url !== newDownload.url));
 			if (createDownloads)
 				await this.server.prisma.download.createMany({
 					data: createDownloads.map((download) => ({ name: download.name, url: download.url, footageId: content.id })),
@@ -85,6 +91,13 @@ export class ContentManager {
 
 		const tags = updatedContent.tagIds.map((id) => this.tags.get(id)).filter(Boolean) as Tag[];
 		const contentInstance = new Content({ ...updatedContent, tags }, this.server);
+
+		for (const [id, tag] of this.tags) {
+			tag.content = tag.content.filter((content) => content.id !== contentInstance.id);
+			if (!tags.some((t) => t.id === id)) continue;
+
+			tag.content.push(contentInstance);
+		}
 
 		this.content.set(contentInstance.id, contentInstance);
 	}
