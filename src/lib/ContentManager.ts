@@ -117,6 +117,10 @@ export class ContentManager {
 			user.bookmarks = user.bookmarks.filter((item) => item.id !== id);
 			user.recent = user.recent.filter((item) => item.id !== id);
 		}
+
+		for (const tag of this.tags.values()) {
+			tag.content = tag.content.filter((content) => content.id !== id);
+		}
 	}
 
 	/**
