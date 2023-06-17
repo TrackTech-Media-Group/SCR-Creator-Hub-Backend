@@ -27,11 +27,11 @@ export class SyncManager {
 	public async syncContent() {
 		const { prisma, contentManager } = this.server;
 		for await (const content of contentManager.content.values()) {
-			const contentLinkedDownloads = await prisma.download.findMany({ where: { footageId: content.id } });
+			const contentLinkedDownloads = await prisma.download.findMany({ where: { contentId: content.id } });
 			const shouldDelete = contentLinkedDownloads.filter((download) => !content.downloads.map((dwnld) => dwnld.id).includes(download.id));
 
 			await prisma.download.deleteMany({ where: { id: { in: shouldDelete.map((download) => download.id) } } });
-			await prisma.footage.update({ where: { id: content.id }, data: { tagIds: content.tagIds } });
+			await prisma.content.update({ where: { id: content.id }, data: { tagIds: content.tagIds } });
 		}
 	}
 

@@ -2,7 +2,7 @@ import type { CreatorHubServer } from "#lib/Server.js";
 import { Content } from "#structures/Content.js";
 import { Tag } from "#structures/Tag.js";
 import { Utils } from "#lib/utils.js";
-import type { Tag as iTag, Footage as iContent, Download } from "@prisma/client";
+import type { Tag as iTag, Content as iContent, Download } from "@prisma/client";
 import { Logger } from "@snowcrystals/icicle";
 import { bold } from "colorette";
 import MeasurePerformance from "./decorators/MeasurePerformance.js";
@@ -33,8 +33,8 @@ export class ContentManager {
 	 * Creates a new content item
 	 * @param data The content data
 	 */
-	public async createContent(data: Omit<iContent, "id" | "tagIds"> & { downloads: Omit<Download, "footageId" | "id">[]; tags: iTag[] }) {
-		const content = await this.server.prisma.footage.create({
+	public async createContent(data: Omit<iContent, "id" | "tagIds"> & { downloads: Omit<Download, "contentId" | "id">[]; tags: iTag[] }) {
+		const content = await this.server.prisma.content.create({
 			data: {
 				name: data.name,
 				type: data.type,
@@ -75,15 +75,15 @@ export class ContentManager {
 			const createDownloads = _data.downloads.filter((newDownload) => content.downloads.every((download) => download.url !== newDownload.url));
 			if (createDownloads)
 				await this.server.prisma.download.createMany({
-					data: createDownloads.map((download) => ({ name: download.name, url: download.url, footageId: content.id })),
+					data: createDownloads.map((download) => ({ name: download.name, url: download.url, contentId: content.id })),
 					skipDuplicates: true
 				});
 
-			const newDownloads = await this.server.prisma.download.findMany({ where: { footageId: content.id } });
+			const newDownloads = await this.server.prisma.download.findMany({ where: { contentId: content.id } });
 			downloads = newDownloads.map((download) => ({ id: download.id }));
 		}
 
-		const updatedContent = await this.server.prisma.footage.update({
+		const updatedContent = await this.server.prisma.content.update({
 			where: { id },
 			data: { ...data, downloads: { set: downloads } },
 			include: { downloads: true }
@@ -109,8 +109,8 @@ export class ContentManager {
 	public async deleteContent(id: string) {
 		if (!this.content.has(id)) return;
 
-		await this.server.prisma.download.deleteMany({ where: { footageId: id } });
-		await this.server.prisma.footage.delete({ where: { id } });
+		await this.server.prisma.download.deleteMany({ where: { contentId: id } });
+		await this.server.prisma.content.delete({ where: { id } });
 		this.content.delete(id);
 
 		for (const user of this.server.userManager.users.values()) {
@@ -206,7 +206,7 @@ export class ContentManager {
 		};
 
 		return new Promise<(iContent & { downloads: Download[] })[]>((res) =>
-			this.server.prisma.footage
+			this.server.prisma.content
 				.findMany({ include: { downloads: true } })
 				.then(res)
 				.catch(onReject)

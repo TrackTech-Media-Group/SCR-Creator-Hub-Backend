@@ -1,9 +1,6 @@
 import { PrismaClient } from "@prisma/client";
 import { config } from "dotenv";
 import { join } from "path";
-import axios from "axios";
-import FormData from "form-data";
-import sharp from "sharp";
 config({ path: join(process.cwd(), "data", ".env") });
 
 // void (async () => {
@@ -139,46 +136,131 @@ config({ path: join(process.cwd(), "data", ".env") });
 // 	}
 // })();
 
+// void (async () => {
+// 	const prisma = new PrismaClient();
+// 	await prisma.$connect();
+
+// 	const footageRaw = await prisma.footage.findMany({ include: { downloads: true } });
+// 	const footage = footageRaw.filter((f) => f.preview && f.type === "video");
+
+// 	for await (const item of footage) {
+// 		console.log(`Running for ${item.name} (${footage.indexOf(item) + 1}/${footage.length})`);
+// 		const download = item.preview;
+
+// 		try {
+// 			console.log(`Downloading the preview...`);
+// 			const { data: preview } = await axios.get<Buffer>(download!, { responseType: "arraybuffer" });
+
+// 			console.log(`Creating optimised thumbnail...`);
+// 			const transformer = sharp(preview, { sequentialRead: true });
+// 			transformer.rotate();
+// 			transformer.png({ quality: 12 });
+// 			transformer.resize(320, 180);
+
+// 			const optBuffer = await transformer.toBuffer();
+// 			console.log(`Optimising complete, uploading...`);
+
+// 			console.log(`Uploading thumbnail...`);
+// 			const form = new FormData();
+// 			form.append("upload", optBuffer, `preview.png`);
+
+// 			const req = await axios<{ url: string }>(`${process.env.UPLOAD_API}/api/upload`, {
+// 				data: form,
+// 				method: "POST",
+// 				headers: { Authorization: process.env.UPLOAD_API_KEY, "Content-Type": "multipart/form-data" }
+// 			});
+
+// 			console.log(`Upload completed, editing config...`);
+// 			await prisma.footage.update({ where: { id: item.id }, data: { preview: req.data.url.replace("http://", "https://") } });
+// 			console.log(`Continuing with next item`);
+// 		} catch (err) {
+// 			console.error(err);
+// 			console.log(`Failed to optimise ${item.name} (${footage.indexOf(item) + 1}/${footage.length})`);
+// 		}
+// 	}
+// })();
+
+// void (async () => {
+// 	const prisma = new PrismaClient();
+// 	await prisma.$connect();
+
+// 	await prisma.download.deleteMany();
+// 	await prisma.session.deleteMany();
+// 	await prisma.footage.deleteMany();
+// 	await prisma.user.deleteMany();
+// 	await prisma.tag.deleteMany();
+// })();
+
+// void (async () => {
+// 	const prisma = new PrismaClient();
+// 	await prisma.$connect();
+
+// 	const footage = await prisma.footage.findMany({ include: { downloads: true } });
+// 	const users = await prisma.user.findMany({ include: { sessions: true } });
+// 	const tags = await prisma.tag.findMany();
+// 	await writeFile(join(process.cwd(), "backup.json"), JSON.stringify({ footage, users, tags }));
+// })();
+
+// import data from "../backup.json" assert { type: "json" };
+
+// void (async () => {
+// 	const prisma = new PrismaClient();
+// 	await prisma.$connect();
+
+// 	const existingContent = await prisma.content.findMany();
+
+// 	for await (const footage of data.footage) {
+// 		if (existingContent.map((content) => content.id).includes(footage.id)) continue;
+// 		await prisma.content.create({
+// 			data: {
+// 				...footage,
+// 				downloads: {
+// 					createMany: {
+// 						data: footage.downloads.map((download) => ({
+// 							name: download.name,
+// 							url: download.url,
+// 							id: download.id,
+// 							contentId: download.footageId
+// 						}))
+// 					}
+// 				}
+// 			}
+// 		});
+
+// 		console.log(`Created content ${footage.name} (${footage.id})`);
+// 	}
+
+// 	for await (const user of data.users) {
+// 		await prisma.user.create({
+// 			data: {
+// 				...user,
+// 				sessions: {
+// 					createMany: {
+// 						data: user.sessions.map((session) => ({
+// 							token: session.token,
+// 							expirationDate: session.expirationDate
+// 						}))
+// 					}
+// 				}
+// 			}
+// 		});
+
+// 		console.log(`Created user ${user.username} (${user.userId})`);
+// 	}
+
+// 	for await (const tag of data.tags) {
+// 		await prisma.tag.create({
+// 			data: tag
+// 		});
+
+// 		console.log(`Created tag ${tag.name} (${tag.id})`);
+// 	}
+
+// 	console.log("Completed.");
+// 	// await writeFile(join(process.cwd(), "backup.json"), JSON.stringify({ footage, users, tags }));
+// })();
+
 void (async () => {
 	const prisma = new PrismaClient();
 	await prisma.$connect();
-
-	const footageRaw = await prisma.footage.findMany({ include: { downloads: true } });
-	const footage = footageRaw.filter((f) => f.preview && f.type === "video");
-
-	for await (const item of footage) {
-		console.log(`Running for ${item.name} (${footage.indexOf(item) + 1}/${footage.length})`);
-		const download = item.preview;
-
-		try {
-			console.log(`Downloading the preview...`);
-			const { data: preview } = await axios.get<Buffer>(download!, { responseType: "arraybuffer" });
-
-			console.log(`Creating optimised thumbnail...`);
-			const transformer = sharp(preview, { sequentialRead: true });
-			transformer.rotate();
-			transformer.png({ quality: 12 });
-			transformer.resize(320, 180);
-
-			const optBuffer = await transformer.toBuffer();
-			console.log(`Optimising complete, uploading...`);
-
-			console.log(`Uploading thumbnail...`);
-			const form = new FormData();
-			form.append("upload", optBuffer, `preview.png`);
-
-			const req = await axios<{ url: string }>(`${process.env.UPLOAD_API}/api/upload`, {
-				data: form,
-				method: "POST",
-				headers: { Authorization: process.env.UPLOAD_API_KEY, "Content-Type": "multipart/form-data" }
-			});
-
-			console.log(`Upload completed, editing config...`);
-			await prisma.footage.update({ where: { id: item.id }, data: { preview: req.data.url.replace("http://", "https://") } });
-			console.log(`Continuing with next item`);
-		} catch (err) {
-			console.error(err);
-			console.log(`Failed to optimise ${item.name} (${footage.indexOf(item) + 1}/${footage.length})`);
-		}
-	}
 })();

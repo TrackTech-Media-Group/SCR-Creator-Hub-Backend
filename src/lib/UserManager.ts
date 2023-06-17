@@ -163,7 +163,7 @@ export class UserManager {
 		const deduplicated = new Set([item, ...user.recent]);
 
 		user.recent = [...deduplicated].slice(0, 100);
-		await this.server.prisma.user.update({ where: { userId: user.userId }, data: { recent: user.recent.map((content) => content.id) } });
+		await this.server.prisma.user.update({ where: { userId: user.userId }, data: { recent: { set: user.recent.map((content) => content.id) } } });
 	}
 
 	/** Returns the list of available sessions -> exits with code 1 if the process fails */

@@ -3,7 +3,7 @@ import type { Content } from "./Content.js";
 
 export class Download implements iDownload {
 	/** The id of the footage associated with this download */
-	public readonly footageId: string;
+	public readonly contentId: string;
 
 	/** The content associated with this download */
 	public readonly content: Content;
@@ -18,7 +18,7 @@ export class Download implements iDownload {
 	public readonly name: string;
 
 	public constructor(data: iDownload, content: Content) {
-		this.footageId = data.footageId!;
+		this.contentId = data.contentId;
 		this.content = content;
 
 		this.id = data.id;
@@ -35,7 +35,7 @@ export class Download implements iDownload {
 			url: this.url,
 			name: this.name,
 			id: this.id,
-			contentId: this.footageId
+			contentId: this.contentId
 		};
 	}
 }

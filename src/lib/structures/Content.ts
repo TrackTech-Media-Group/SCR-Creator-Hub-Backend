@@ -1,12 +1,12 @@
-import type { Footage as iFootage, Download as iDownload } from "@prisma/client";
+import type { Content as iContent, Download as iDownload } from "@prisma/client";
 import { Download } from "./Download.js";
 import { Tag } from "./Tag.js";
 import type { CreatorHubServer } from "#lib/Server.js";
 import type { ContentType } from "#lib/constants.js";
 
-type FullContent = iFootage & { downloads: iDownload[]; tags: Tag[] };
+type FullContent = iContent & { downloads: iDownload[]; tags: Tag[] };
 
-export class Content implements iFootage {
+export class Content implements iContent {
 	/** The unique identifier of this item */
 	public readonly id: string;
 
@@ -14,7 +14,7 @@ export class Content implements iFootage {
 	public name: string;
 
 	/** The preview url for this item */
-	public preview: string | null;
+	public preview: string;
 
 	/** The tag ids associated with this item */
 	public tagIds: string[];
@@ -52,6 +52,7 @@ export class Content implements iFootage {
 		return this.name;
 	}
 
+	/** @deprecated */
 	public getPreview(): string {
 		if (this.preview) return this.preview;
 
@@ -63,7 +64,7 @@ export class Content implements iFootage {
 		return {
 			id: this.id,
 			name: this.name,
-			preview: this.getPreview(),
+			preview: this.preview,
 			tags: this.tags.map((tag) => tag.toJSON()),
 			type: this.type,
 			useCases: this.useCases,

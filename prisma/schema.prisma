@@ -39,17 +39,17 @@ model Download {
   name String
   url  String
 
-  Footage   Footage? @relation(fields: [footageId], references: [id])
-  footageId String?
+  Content   Content @relation(fields: [contentId], references: [id])
+  contentId String
 }
 
-model Footage {
+model Content {
   name String
   id   String @id @default(uuid())
   type String
 
   downloads Download[]
-  preview   String?
+  preview   String
 
   useCases String[] @map("use_cases")
   tagIds   String[] @map("tag_ids")
