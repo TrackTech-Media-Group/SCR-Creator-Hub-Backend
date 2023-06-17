@@ -1,5 +1,6 @@
 import type { CreatorHubServer } from "#lib/Server.js";
 import type { UserContext } from "#lib/constants.js";
+import { Utils } from "#lib/utils.js";
 import { ApplyOptions, Route, methods } from "@snowcrystals/highway";
 import type { NextFunction, Request, Response } from "express";
 
@@ -7,7 +8,8 @@ import type { NextFunction, Request, Response } from "express";
 	middleware: [
 		[methods.GET, "user-view"],
 		[methods.POST, "csrf-token-verification", "user-authentication"]
-	]
+	],
+	ratelimit: Utils.getRatelimitOptions({ windowMs: 2e3, max: 5 })
 })
 export default class extends Route<CreatorHubServer> {
 	public [methods.GET](req: Request, res: Response, next: NextFunction, context: Partial<UserContext>) {

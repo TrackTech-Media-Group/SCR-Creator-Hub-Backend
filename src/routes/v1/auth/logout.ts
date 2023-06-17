@@ -1,10 +1,11 @@
 import type { CreatorHubServer } from "#lib/Server.js";
 import { ApiError } from "#lib/errors/ApiError.js";
 import { Utils } from "#lib/utils.js";
-import { Route, methods } from "@snowcrystals/highway";
+import { ApplyOptions, Route, methods } from "@snowcrystals/highway";
 import { HttpStatusCode } from "axios";
 import type { NextFunction, Request, Response } from "express";
 
+@ApplyOptions<Route.Options>({ ratelimit: Utils.getRatelimitOptions({ windowMs: 5e3, max: 1 }) })
 export default class extends Route<CreatorHubServer> {
 	public async [methods.DELETE](req: Request, res: Response, next: NextFunction) {
 		const { authorization } = req.headers;

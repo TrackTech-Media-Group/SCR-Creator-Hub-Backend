@@ -587,14 +587,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@snowcrystals/highway@npm:1.0.3":
-  version: 1.0.3
-  resolution: "@snowcrystals/highway@npm:1.0.3"
+"@snowcrystals/highway@npm:^1.1.1":
+  version: 1.1.1
+  resolution: "@snowcrystals/highway@npm:1.1.1"
   dependencies:
     "@discordjs/collection": ^1.5.1
     express: ^4.18.2
+    express-rate-limit: ^6.7.0
     glob: ^10.2.7
-  checksum: fd4ed5dd3e545f95a445bc4dd0a05d5311bdd4dc1777db63314fb6481ba6d95417e95d3c078f046fda4a27083a2c08ef3552db62aeb4e00c32bee93597c1ed32
+  checksum: d3d049fe16e852a9c55905aae3b2d28b1c55e1f4475de3dffd1d5446cb4480598ec09acd2c4606c5f4e6bddf31bfc465f7d04c24925b08a216e7364b9faf6974
   languageName: node
   linkType: hard
 
@@ -1874,7 +1875,7 @@ __metadata:
     "@sapphire/eslint-config": ^4.4.2
     "@sapphire/prettier-config": ^1.4.5
     "@sapphire/ts-config": ^4.0.0
-    "@snowcrystals/highway": 1.0.3
+    "@snowcrystals/highway": ^1.1.1
     "@snowcrystals/icicle": ^2.0.4
     "@types/cookie-parser": ^1.4.3
     "@types/cors": ^2.8.13
@@ -2504,7 +2505,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"express-rate-limit@npm:6.7.0":
+"express-rate-limit@npm:6.7.0, express-rate-limit@npm:^6.7.0":
   version: 6.7.0
   resolution: "express-rate-limit@npm:6.7.0"
   peerDependencies:

@@ -2,20 +2,13 @@ import type { CreatorHubServer } from "#lib/Server.js";
 import { CONTENT_TYPE_FILTER, type ContentTypeFilter } from "#lib/constants.js";
 import MeasurePerformance from "#lib/decorators/MeasurePerformance.js";
 import { Utils } from "#lib/utils.js";
-import { Route, methods } from "@snowcrystals/highway";
+import { ApplyOptions, Route, methods } from "@snowcrystals/highway";
 import type { Request, Response } from "express";
-import { rateLimit } from "express-rate-limit";
 import Fuse from "fuse.js";
 import _ from "lodash";
 
+@ApplyOptions<Route.Options>({ ratelimit: Utils.getRatelimitOptions({ windowMs: 5e3, max: 10 }) })
 export default class extends Route<CreatorHubServer> {
-	public constructor() {
-		super();
-
-		const ratelimit = rateLimit(Utils.getRatelimitOptions({ windowMs: 5e3, max: 10 }));
-		this.router.use(ratelimit);
-	}
-
 	@MeasurePerformance({ name: "Route#search(Methods.GET)" })
 	public [methods.GET](req: Request, res: Response) {
 		const query = this.cleanQuery(req.query);
