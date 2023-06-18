@@ -1,4 +1,4 @@
-FROM node:18-alpine as builder
+FROM node:20-alpine as builder
 WORKDIR /creatorhub
 
 # Copy Existing Files
@@ -13,7 +13,7 @@ RUN yarn install --immutable
 RUN yarn run prisma generate
 RUN yarn build
 
-FROM node:18-alpine as runner
+FROM node:20-alpine as runner
 RUN apk add --no-cache ffmpeg
 
 WORKDIR /creatorhub
