@@ -21,7 +21,7 @@
 		"postinstall": "is-ci || husky install"
 	},
 	"dependencies": {
-		"@prisma/client": "4.15.0",
+		"@prisma/client": "4.16.1",
 		"@sapphire/discord-utilities": "^3.0.3",
 		"@snowcrystals/highway": "^1.1.1",
 		"@snowcrystals/icicle": "^2.0.4",
