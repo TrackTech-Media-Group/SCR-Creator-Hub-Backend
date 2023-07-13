@@ -21,7 +21,7 @@
 		"postinstall": "is-ci || husky install"
 	},
 	"dependencies": {
-		"@prisma/client": "4.16.2",
+		"@prisma/client": "5.0.0",
 		"@sapphire/discord-utilities": "^3.0.3",
 		"@snowcrystals/highway": "^1.1.1",
 		"@snowcrystals/icicle": "^2.0.4",
@@ -73,7 +73,7 @@
 		"lint-staged": "^13.2.3",
 		"nodemon": "^3.0.1",
 		"prettier": "^2.8.8",
-		"prisma": "^4.16.2",
+		"prisma": "^5.0.0",
 		"typescript": "^5.1.6"
 	},
 	"engines": {
