@@ -51,6 +51,7 @@ export class ContentManager {
 
 		const tags = content.tagIds.map((id) => this.tags.get(id)).filter(Boolean) as Tag[];
 		const contentInstance = new Content({ ...content, tags }, this.server);
+		tags.forEach((tag) => tag.content.push(contentInstance));
 		this.content.set(contentInstance.id, contentInstance);
 	}
 
