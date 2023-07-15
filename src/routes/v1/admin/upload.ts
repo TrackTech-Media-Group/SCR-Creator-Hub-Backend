@@ -23,6 +23,7 @@ interface ContentCreateItem {
 	type: ContentType;
 
 	useCases: string[];
+	preview?: string;
 	downloads: UploadDownload[];
 }
 
@@ -32,12 +33,12 @@ export default class extends Route<CreatorHubServer> {
 
 	public async [methods.POST](req: Request<any, any, ContentCreateItem>, res: Response, next: NextFunction) {
 		try {
-			const { type, downloads, name, tags, useCases } = req.body;
+			const { type, preview: _preview, downloads, name, tags, useCases } = req.body;
 			switch (type) {
 				case "image":
 					{
 						const previewDownload = downloads.find((download) => download.isPreview) || downloads[0];
-						const preview = await this.generateImagePreview(previewDownload.url);
+						const preview = _preview || (await this.generateImagePreview(previewDownload.url));
 
 						await this.server.contentManager.createContent({ name, tags, useCases, type, downloads, preview });
 					}
@@ -45,7 +46,7 @@ export default class extends Route<CreatorHubServer> {
 				case "video":
 					{
 						const previewDownload = downloads.find((download) => download.isPreview) || downloads[0];
-						const preview = await this.generateVideoPreview(previewDownload.url);
+						const preview = _preview || (await this.generateVideoPreview(previewDownload.url));
 
 						await this.server.contentManager.createContent({ name, tags, useCases, type, downloads, preview });
 					}
@@ -53,7 +54,7 @@ export default class extends Route<CreatorHubServer> {
 				case "music":
 					{
 						const previewDownload = downloads.find((download) => download.isPreview) || downloads[0];
-						const preview = await this.generateAudioPreview(previewDownload.url);
+						const preview = _preview || (await this.generateAudioPreview(previewDownload.url));
 
 						await this.server.contentManager.createContent({ name, tags, useCases, type, downloads, preview });
 					}
