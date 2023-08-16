@@ -51,7 +51,7 @@
 		"@commitlint/cli": "^17.7.1",
 		"@commitlint/config-angular": "^17.7.0",
 		"@sapphire/eslint-config": "^5.0.1",
-		"@sapphire/prettier-config": "^1.4.5",
+		"@sapphire/prettier-config": "^2.0.0",
 		"@sapphire/ts-config": "^4.0.1",
 		"@types/cookie-parser": "^1.4.3",
 		"@types/cors": "^2.8.13",
