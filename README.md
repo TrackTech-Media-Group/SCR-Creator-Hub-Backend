@@ -1,29 +1,28 @@
 <div align="center">
-    <h1>creatorhub-backend</h1>
+    <h1>SCR Creator Hub Backend</h1>
   
+
   <p></p>
   
   <p align="center">
     <img alt="Version" src="https://img.shields.io/badge/version-1.0.0-blue.svg" />
     <a href="/LICENSE" target="_blank">
-      <img alt="License: None" src="https://img.shields.io/badge/License-None-yellow.svg" />
+      <img alt="License: MIT" src="https://img.shields.io/badge/License-MIT-yellow.svg" />
     </a>
   </p>
 </div>
 
 ---
 
+![Logo_text_darkmode-6](https://github.com/TrackTech-Media-Group/SCR-Creator-Hub-Frontend/assets/120676221/5602d002-8756-4e1c-a7c2-e0ff2f1dfb6d)
 ## Information
 
-THis is the back-end of the Creator Hub application.
+This is the back-end of the SCR Creator Hub application.
+By using, modifiying, or publishing any code here, you agree that TrackTech Media Group has no inolvement or association in said uses. 
 
-## Author
+Front-End: 
+https://github.com/TrackTech-Media-Group/SCR-Creator-Hub-Frontend
 
-👤 **ijsKoud**
-
--   Website: https://ijskoud.dev/
--   Email: <hi@ijskoud.dev>
--   Twitter: [@ijsKoud](https://ijskoud.dev/twitter)
--   Github: [@ijsKoud](https://github.com/ijsKoud)
-
----
+# TrackTech Media Group:
+### CEO: OneTrackMinded
+### Lead Developer: ijskoud
