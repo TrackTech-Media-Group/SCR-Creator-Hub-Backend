@@ -1,7 +1,7 @@
 import { LogLevel } from "@snowcrystals/icicle";
 import type { Options as RateLimitOptions } from "express-rate-limit";
-import RedisStore from "rate-limit-redis";
-import { RedisClient } from "./constants.js";
+// import RedisStore from "rate-limit-redis";
+// import { RedisClient } from "./constants.js";
 import jwt, { type SignOptions as JwtSignOptions, type VerifyOptions as JwtVerifyOptions } from "jsonwebtoken";
 import { createCipheriv, createDecipheriv, randomBytes } from "node:crypto";
 
@@ -30,7 +30,7 @@ export class Utils {
 			standardHeaders: true,
 			legacyHeaders: true,
 			message: { "*": "Too many requests, please try again later." },
-			store: new RedisStore({ sendCommand: (...args: string[]) => RedisClient.sendCommand(args) }),
+			// store: new RedisStore({ sendCommand: (...args: string[]) => RedisClient.sendCommand(args) }),
 			keyGenerator: (req) => this.encrypt(Buffer.from(`${req.ip}-${req.path}`).toString("base64")),
 			...options
 		};
