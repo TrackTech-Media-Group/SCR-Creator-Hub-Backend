@@ -25,7 +25,7 @@
 		"@sapphire/discord-utilities": "^3.1.0",
 		"@snowcrystals/highway": "1.1.2",
 		"@snowcrystals/icicle": "^2.0.4",
-		"axios": "^1.4.0",
+		"axios": "^1.6.0",
 		"colorette": "^2.0.20",
 		"cookie-parser": "^1.4.6",
 		"cors": "^2.8.5",
